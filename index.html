@@ -416,6 +416,136 @@
                 font-size: 1.8em;
             }
         }
+
+        /* History Modal */
+        .history-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .history-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 2px solid rgba(255, 200, 100, 0.3);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 200, 100, 0.3);
+            padding-bottom: 15px;
+        }
+
+        .history-header h2 {
+            color: #ffd700;
+            margin: 0;
+        }
+
+        .history-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        .history-close:hover {
+            color: #ff6b6b;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 200, 100, 0.2);
+        }
+
+        .history-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .history-info strong {
+            color: #ffd700;
+            font-size: 1.1em;
+        }
+
+        .history-tier {
+            color: #64d2ff;
+            font-size: 0.9em;
+        }
+
+        .history-time {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8em;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-history {
+            padding: 8px 15px;
+            background: linear-gradient(145deg, #4ecdc4, #44a08d);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-history:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-delete {
+            background: linear-gradient(145deg, #ff6b6b, #ee5a5a);
+        }
+
+        /* History button on main page */
+        .btn-history-open {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #a855f7, #7c3aed);
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(168, 85, 247, 0.5);
+            transition: transform 0.3s;
+            z-index: 100;
+        }
+
+        .btn-history-open:hover {
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
@@ -502,6 +632,24 @@
                     <button class="btn btn-clear" onclick="clearCaptured()">🗑 ล้างทั้งหมด</button>
                     <button class="btn btn-secondary" onclick="goToPlannerPage()">✕ กลับหน้าหลัก</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Button -->
+    <button class="btn-history-open" onclick="toggleHistory()" title="ประวัติการ Export">
+        📜
+    </button>
+
+    <!-- History Modal -->
+    <div class="history-modal" id="historyModal">
+        <div class="history-content">
+            <div class="history-header">
+                <h2>📜 ประวัติการ Export</h2>
+                <button class="history-close" onclick="toggleHistory()">✕</button>
+            </div>
+            <div id="historyContainer">
+                <div class="empty-state">ยังไม่มีประวัติการ export</div>
             </div>
         </div>
     </div>
@@ -1050,6 +1198,108 @@
             link.download = filename;
             link.href = canvas.toDataURL("image/png");
             link.click();
+
+            // Save to history
+            saveToHistory(name, canvas.toDataURL("image/png"), usedTier);
+        }
+
+        // History Management (localStorage)
+        const HISTORY_KEY = "7k_skill_history";
+        const MAX_HISTORY = 20;
+
+        function getHistory() {
+            try {
+                const data = localStorage.getItem(HISTORY_KEY);
+                return data ? JSON.parse(data) : [];
+            } catch {
+                return [];
+            }
+        }
+
+        function saveToHistory(name, imageData, usedTier) {
+            const history = getHistory();
+            const record = {
+                id: Date.now(),
+                name: name || "ไม่ระบุชื่อ",
+                image: imageData,
+                usedTier: usedTier,
+                skillCount: capturedSkills.length,
+                timestamp: new Date().toLocaleString("th-TH")
+            };
+
+            // Add to beginning
+            history.unshift(record);
+
+            // Keep only MAX_HISTORY items
+            if (history.length > MAX_HISTORY) {
+                history.splice(MAX_HISTORY);
+            }
+
+            // Save back to localStorage (without image data to save space, keep only last 5 with images)
+            const historyToSave = history.map((item, index) => ({
+                ...item,
+                image: index < 5 ? item.image : null
+            }));
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(historyToSave));
+
+            renderHistory();
+        }
+
+        function deleteFromHistory(id) {
+            if (confirm("ต้องการลบประวัตินี้ใช่หรือไม่?")) {
+                let history = getHistory();
+                history = history.filter(item => item.id !== id);
+                localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+                renderHistory();
+            }
+        }
+
+        function renderHistory() {
+            const container = document.getElementById("historyContainer");
+            const history = getHistory();
+
+            if (history.length === 0) {
+                container.innerHTML = '<div class="empty-state">ยังไม่มีประวัติการ export</div>';
+                return;
+            }
+
+            container.innerHTML = "";
+
+            history.forEach((record) => {
+                const div = document.createElement("div");
+                div.className = "history-item";
+                div.innerHTML = `
+                    <div class="history-info">
+                        <strong>${record.name}</strong>
+                        <span class="history-tier">${record.skillCount} Skills - จบ ${record.usedTier}/70</span>
+                        <span class="history-time">${record.timestamp}</span>
+                    </div>
+                    <div class="history-actions">
+                        ${record.image ? `<button class="btn-history" onclick="downloadHistoryItem(${record.id})">📥 ดาวน์โหลด</button>` : '<span style="color:#aaa;font-size:0.8em;">รูปถูกลบแล้ว</span>'}
+                        <button class="btn-history btn-delete" onclick="deleteFromHistory(${record.id})">🗑</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function downloadHistoryItem(id) {
+            const history = getHistory();
+            const record = history.find(item => item.id === id);
+            if (record && record.image) {
+                const link = document.createElement("a");
+                link.download = `${record.name}_จบ${record.usedTier}_70.png`;
+                link.href = record.image;
+                link.click();
+            }
+        }
+
+        function toggleHistory() {
+            const modal = document.getElementById("historyModal");
+            modal.style.display = modal.style.display === "flex" ? "none" : "flex";
+            if (modal.style.display === "flex") {
+                renderHistory();
+            }
         }
 
         // Initialize on load
