@@ -38,7 +38,7 @@
 For issues, questions, or suggestions:
 - GitHub Repository: [Piyabordee/7k-autoskill](https://github.com/Piyabordee/7k-autoskill)
 - GitHub Issues: [Create an Issue](https://github.com/Piyabordee/7k-autoskill/issues)
-- Live Demo: [piyabordee.github.io/7k-autoskill](https://piyabordee.github.io/7k-autoskill/)
+- Live Demo: [7k-autoskill.vercel.app](https://7k-autoskill.vercel.app/)
 
 ---
 
