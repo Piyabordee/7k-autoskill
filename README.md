@@ -9,7 +9,7 @@
 
 **A standalone skill planning tool for Seven Knights (7K)**
 
-[Live Demo](#) | [Report Issue](https://github.com/yourusername/7k-autoskill/issues)
+[Live Demo](https://piyabordee.github.io/7k-autoskill/) | [Report Issue](https://github.com/Piyabordee/7k-autoskill/issues)
 
 </div>
 
@@ -33,7 +33,7 @@
 
 ### Online (Recommended)
 
-1. Visit the [live demo](#) page
+1. Visit the [live demo](https://piyabordee.github.io/7k-autoskill/) page
 2. Click the **📸 จับภาพหน้าจอ (Screenshot)** button
 3. Select the window/screen to capture
 4. **Click on each skill** you want to add to your build

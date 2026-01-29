@@ -36,8 +36,9 @@
 ## Contact & Support
 
 For issues, questions, or suggestions:
-- GitHub Issues: [Create an Issue](https://github.com/yourusername/7k-autoskill/issues)
-- Community Discussions: [Discussions](https://github.com/yourusername/7k-autoskill/discussions)
+- GitHub Repository: [Piyabordee/7k-autoskill](https://github.com/Piyabordee/7k-autoskill)
+- GitHub Issues: [Create an Issue](https://github.com/Piyabordee/7k-autoskill/issues)
+- Live Demo: [piyabordee.github.io/7k-autoskill](https://piyabordee.github.io/7k-autoskill/)
 
 ---
 
