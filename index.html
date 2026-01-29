@@ -627,11 +627,49 @@
         .btn-history-open:hover {
             transform: scale(1.05);
         }
+
+        /* Header with screenshot button */
+        .page-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .header-screenshot-btn {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 12px 25px;
+            border-radius: 50px;
+            background: linear-gradient(145deg, #4ecdc4, #44a08d);
+            border: none;
+            color: white;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(78, 205, 196, 0.5);
+            transition: transform 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-screenshot-btn:hover {
+            transform: translateY(-50%) scale(1.05);
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>⚔️ 7K Skill Planner ⚔️</h1>
+        <div class="page-header">
+            <h1>⚔️ 7K Skill Planner ⚔️</h1>
+            <button class="header-screenshot-btn" onclick="goToCapturePage()">
+                📸 จับภาพหน้าจอ (Screenshot)
+            </button>
+        </div>
 
         <!-- Main Planner Page -->
         <div class="page active" id="plannerPage">
@@ -657,10 +695,6 @@
                     <p style="color: #a855f7; font-size: 1.1em; margin-bottom: 15px;">📷 ตัวอย่างผลลัพธ์เมื่อ Export</p>
                     <img src="Finish.png" alt="ตัวอย่างผลลัพธ์ Export" style="max-width: 100%; border-radius: 10px; border: 3px solid rgba(168, 85, 247, 0.5); box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
                 </div>
-
-                <button class="btn btn-primary" onclick="goToCapturePage()" style="padding: 20px 60px; font-size: 1.5em;">
-                    📸 จับภาพหน้าจอ (Screenshot)
-                </button>
 
                 <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
                     <p style="color: rgba(255,255,255,0.5); font-size: 0.9em;">
