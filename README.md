@@ -26,6 +26,7 @@
 - **Drag & Drop Reordering** - Easily rearrange captured skills via drag and drop
 - **Tier Calculation** - Automatically calculates skill progression: `(skills - 1) × 4`
 - **Export as Image** - Download your skill plan as a formatted PNG image
+- **Export History** - Saves your export history locally (up to 20 records)
 - **Standalone** - Single HTML file, no server or installation required
 - **Privacy Focused** - All processing happens locally in your browser
 

@@ -530,21 +530,24 @@
             position: fixed;
             bottom: 30px;
             right: 30px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
+            padding: 12px 25px;
+            border-radius: 50px;
             background: linear-gradient(145deg, #a855f7, #7c3aed);
             border: none;
             color: white;
-            font-size: 1.5em;
+            font-size: 1em;
+            font-weight: bold;
             cursor: pointer;
             box-shadow: 0 5px 20px rgba(168, 85, 247, 0.5);
             transition: transform 0.3s;
             z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-history-open:hover {
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -637,8 +640,8 @@
     </div>
 
     <!-- History Button -->
-    <button class="btn-history-open" onclick="toggleHistory()" title="ประวัติการ Export">
-        📜
+    <button class="btn-history-open" onclick="toggleHistory()" title="ดูประวัติการ Export ที่บันทึกไว้">
+        📜 ประวัติการ Export
     </button>
 
     <!-- History Modal -->
