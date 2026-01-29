@@ -525,6 +525,53 @@
             background: linear-gradient(145deg, #ff6b6b, #ee5a5a);
         }
 
+        /* Preview Modal */
+        .preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .preview-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .preview-content img {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 10px;
+            border: 3px solid rgba(255, 200, 100, 0.5);
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
+        }
+
+        .preview-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 2em;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .preview-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
         /* History button on main page */
         .btn-history-open {
             position: fixed;
@@ -653,6 +700,18 @@
             </div>
             <div id="historyContainer">
                 <div class="empty-state">ยังไม่มีประวัติการ export</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="preview-modal" id="previewModal">
+        <div class="preview-content">
+            <button class="preview-close" onclick="closePreview()">✕</button>
+            <img id="previewImage" src="" alt="Preview">
+            <div class="preview-actions">
+                <button class="btn btn-primary" onclick="downloadPreview()">📥 ดาวน์โหลด</button>
+                <button class="btn btn-secondary" onclick="closePreview()">ปิด</button>
             </div>
         </div>
     </div>
@@ -1278,12 +1337,42 @@
                         <span class="history-time">${record.timestamp}</span>
                     </div>
                     <div class="history-actions">
-                        ${record.image ? `<button class="btn-history" onclick="downloadHistoryItem(${record.id})">📥 ดาวน์โหลด</button>` : '<span style="color:#aaa;font-size:0.8em;">รูปถูกลบแล้ว</span>'}
+                        ${record.image ? `
+                            <button class="btn-history" onclick="openPreview(${record.id})">👁️ ดูรูป</button>
+                            <button class="btn-history" onclick="downloadHistoryItem(${record.id})">📥 ดาวน์โหลด</button>
+                        ` : '<span style="color:#aaa;font-size:0.8em;">รูปถูกลบแล้ว</span>'}
                         <button class="btn-history btn-delete" onclick="deleteFromHistory(${record.id})">🗑</button>
                     </div>
                 `;
                 container.appendChild(div);
             });
+        }
+
+        // Preview functions
+        let currentPreviewRecord = null;
+
+        function openPreview(id) {
+            const history = getHistory();
+            const record = history.find(item => item.id === id);
+            if (record && record.image) {
+                currentPreviewRecord = record;
+                document.getElementById("previewImage").src = record.image;
+                document.getElementById("previewModal").style.display = "flex";
+            }
+        }
+
+        function closePreview() {
+            document.getElementById("previewModal").style.display = "none";
+            currentPreviewRecord = null;
+        }
+
+        function downloadPreview() {
+            if (currentPreviewRecord && currentPreviewRecord.image) {
+                const link = document.createElement("a");
+                link.download = `${currentPreviewRecord.name}_จบ${currentPreviewRecord.usedTier}_70.png`;
+                link.href = currentPreviewRecord.image;
+                link.click();
+            }
         }
 
         function downloadHistoryItem(id) {
@@ -1304,6 +1393,20 @@
                 renderHistory();
             }
         }
+
+        // Close preview on outside click
+        document.getElementById("previewModal").addEventListener("click", function(e) {
+            if (e.target === this) {
+                closePreview();
+            }
+        });
+
+        // Close history on outside click
+        document.getElementById("historyModal").addEventListener("click", function(e) {
+            if (e.target === this) {
+                toggleHistory();
+            }
+        });
 
         // Initialize on load
         init();
