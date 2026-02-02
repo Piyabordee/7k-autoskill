@@ -478,7 +478,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255,255, 255, 0.05);
             border-radius: 10px;
             padding: 15px;
             margin-bottom: 10px;
@@ -692,7 +692,7 @@
                         <p>3. เลือกหน้าต่างเกมที่เปิดไว้</p>
                         <p>4. <strong style="color: #00ff00;">คลิก</strong> ที่สกิลที่ต้องการ - ระบบจะครอบให้อัตโนมัติ</p>
                         <p>5. ลากเรียงลำดับสกิลได้ตามต้องการ</p>
-                        <p>6. กรอกชื่อตัวละคร แล้วกด <strong style="color: #a855f7;">Export รูป</strong></p>
+                        <p>6. กรอกชื่อตัวละคร แล้วกด <strong style="color: #4ecdc4;">👁️ ดูผลลัพธ์</strong> เพื่อดูรูปก่อน ถ้าพอใจแล้วกด <strong style="color: #a855f7;">📥 ดาวน์โหลด</strong></p>
                     </div>
                 </div>
 
@@ -761,7 +761,7 @@
 
                 <div class="capture-controls">
                     <button class="btn btn-undo" id="undoCaptureBtn" onclick="undoLastCapture()" disabled>↩ ยกเลิกที่เลือก</button>
-                    <button class="btn btn-export" id="exportBtn" onclick="exportImage()" disabled>📷 Export รูป</button>
+                    <button class="btn btn-primary" id="previewBtn" onclick="previewImage()" disabled>👁️ ดูผลลัพธ์</button>
                     <button class="btn btn-clear" onclick="clearCaptured()">🗑 ล้างทั้งหมด</button>
                     <button class="btn btn-secondary" onclick="goToPlannerPage()">✕ กลับหน้าหลัก</button>
                 </div>
@@ -1165,19 +1165,19 @@
         function renderCapturedSkills() {
             const container = document.getElementById("capturedSkills");
             const undoBtn = document.getElementById("undoCaptureBtn");
-            const exportBtn = document.getElementById("exportBtn");
+            const previewBtn = document.getElementById("previewBtn");
 
             if (capturedSkills.length === 0) {
                 container.innerHTML = '<div class="empty-state">ลากสี่เหลี่ยมครอบสกิลด้านบน</div>';
                 undoBtn.disabled = true;
-                exportBtn.disabled = true;
+                previewBtn.disabled = true;
                 document.getElementById("captureSummary").textContent = "ยังไม่ได้เลือกสกิล";
                 return;
             }
 
             container.innerHTML = "";
             undoBtn.disabled = false;
-            exportBtn.disabled = false;
+            previewBtn.disabled = false;
 
             capturedSkills.forEach((skill, index) => {
                 const div = document.createElement("div");
@@ -1255,8 +1255,8 @@
             }
         }
 
-        // Export image
-        function exportImage() {
+        // Preview image before export
+        function previewImage() {
             if (capturedSkills.length === 0) {
                 alert("กรุณาเลือกสกิลอย่างน้อย 1 อัน");
                 return;
@@ -1266,6 +1266,17 @@
             const skillName = document.getElementById("skillName").value.trim();
             const displayName = skillName || "ไม่ระบุชื่อ";
 
+            // Create export canvas
+            const exportCanvas = createExportCanvas(displayName);
+
+            // Show preview modal
+            document.getElementById("previewImage").src = exportCanvas.toDataURL("image/png");
+            currentPreviewCanvas = exportCanvas;
+            document.getElementById("previewModal").style.display = "flex";
+        }
+
+        // Create export canvas (reusable function)
+        function createExportCanvas(displayName) {
             // Calculate used tier (สกิล - 1) * 4
             const usedTier = (capturedSkills.length - 1) * 4;
             const maxTier = 70;
@@ -1299,39 +1310,54 @@
             const tierText = capturedSkills.length + " Skills - จบ " + usedTier + "/" + maxTier + " เทิร์น";
             ctx.fillText(tierText, exportCanvas.width / 2, 45);
 
-            // Draw skills
-            let loadedCount = 0;
+            // Draw skills synchronously
             capturedSkills.forEach((skill, index) => {
                 const col = index % cols;
                 const row = Math.floor(index / cols);
                 const x = padding + col * (skillSize + padding);
                 const y = padding + row * (skillSize + padding) + 55;
 
-                // Load and draw skill image
+                // Draw skill image directly from base64
                 const img = new Image();
-                img.onload = () => {
-                    ctx.drawImage(img, x, y, skillSize, skillSize);
-
-                    // Draw order number circle
-                    ctx.fillStyle = "#ff6b6b";
-                    ctx.beginPath();
-                    ctx.arc(x + skillSize - 10, y + 10, 12, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    // Draw order number
-                    ctx.fillStyle = "#fff";
-                    ctx.font = "bold 12px Segoe UI";
-                    ctx.textAlign = "center";
-                    ctx.fillText(index + 1, x + skillSize - 10, y + 14);
-
-                    loadedCount++;
-                    // Download if this is the last image
-                    if (loadedCount === capturedSkills.length) {
-                        downloadCanvas(exportCanvas, displayName);
-                    }
-                };
                 img.src = skill.image;
+                ctx.drawImage(img, x, y, skillSize, skillSize);
+
+                // Draw order number circle
+                ctx.fillStyle = "#ff6b6b";
+                ctx.beginPath();
+                ctx.arc(x + skillSize - 10, y + 10, 12, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw order number
+                ctx.fillStyle = "#fff";
+                ctx.font = "bold 12px Segoe UI";
+                ctx.textAlign = "center";
+                ctx.fillText(index + 1, x + skillSize - 10, y + 14);
             });
+
+            return exportCanvas;
+        }
+
+        // Export image (now uses createExportCanvas)
+        function exportImage() {
+            if (capturedSkills.length === 0) {
+                alert("กรุณาเลือกสกิลอย่างน้อย 1 อัน");
+                return;
+            }
+
+            // Get skill name from input
+            const skillName = document.getElementById("skillName").value.trim();
+            const displayName = skillName || "ไม่ระบุชื่อ";
+
+            // Create export canvas
+            const exportCanvas = createExportCanvas(displayName);
+
+            // Download canvas as image
+            downloadCanvas(exportCanvas, displayName);
+
+            // Close preview modal if open
+            document.getElementById("previewModal").style.display = "none";
+            currentPreviewCanvas = null;
         }
 
         // Download canvas as image
@@ -1437,6 +1463,7 @@
 
         // Preview functions
         let currentPreviewRecord = null;
+        let currentPreviewCanvas = null;
 
         function openPreview(id) {
             const history = getHistory();
@@ -1451,10 +1478,21 @@
         function closePreview() {
             document.getElementById("previewModal").style.display = "none";
             currentPreviewRecord = null;
+            currentPreviewCanvas = null;
         }
 
         function downloadPreview() {
-            if (currentPreviewRecord && currentPreviewRecord.image) {
+            if (currentPreviewCanvas) {
+                const skillName = document.getElementById("skillName").value.trim();
+                const displayName = skillName || "ไม่ระบุชื่อ";
+                const usedTier = (capturedSkills.length - 1) * 4;
+                const link = document.createElement("a");
+                let filename = displayName.replace(/[^a-zA-Z0-9\u0E00-\u0E7Fก-๙]/g, "_");
+                filename += "_จบ" + usedTier + "_70.png";
+                link.download = filename;
+                link.href = currentPreviewCanvas.toDataURL("image/png");
+                link.click();
+            } else if (currentPreviewRecord && currentPreviewRecord.image) {
                 const link = document.createElement("a");
                 link.download = `${currentPreviewRecord.name}_จบ${currentPreviewRecord.usedTier}_70.png`;
                 link.href = currentPreviewRecord.image;
