@@ -3,10 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self'; 
+                   img-src 'self' data: https:; 
+                   script-src 'self' 'unsafe-inline'; 
+                   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
+                   font-src 'self' https://fonts.gstatic.com;">
     <title>7K Skill Planner</title>
     <link rel="icon" type="image/png" href="logo.png">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+
+        /* CSS Variables for consistency */
+        :root {
+            /* Colors */
+            --color-gold: #ffd700;
+            --color-blue: #64d2ff;
+            --color-green: #4ecdc4;
+            --color-purple: #a855f7;
+            --color-red: #ff6b6b;
+            --color-gray: #666;
+            --color-dark-gray: #aaa;
+
+            /* Backgrounds */
+            --bg-dark: #1a1a2e;
+            --bg-medium: #16213e;
+            --bg-light: #0f3460;
+            --bg-transparent-white: rgba(255, 255, 255, 0.05);
+
+            /* Spacing */
+            --spacing-xs: 5px;
+            --spacing-sm: 10px;
+            --spacing-md: 15px;
+            --spacing-lg: 20px;
+            --spacing-xl: 30px;
+
+            /* Border Radius */
+            --radius-sm: 8px;
+            --radius-md: 10px;
+            --radius-lg: 15px;
+            --radius-xl: 20px;
+            --radius-full: 50px;
+
+            /* Z-Index */
+            --z-modal: 1000;
+            --z-modal-high: 1100;
+            --z-floating: 100;
+        }
 
         * {
             margin: 0;
@@ -297,6 +340,120 @@
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+
+        /* Accessibility */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        /* Focus styles for keyboard navigation */
+        .btn:focus,
+        .zoom-btn:focus,
+        .btn-history:focus,
+        .header-screenshot-btn:focus,
+        input:focus {
+            outline: 3px solid #ffd700;
+            outline-offset: 2px;
+        }
+
+        .btn:focus-visible {
+            outline: 3px solid #ffd700;
+            outline-offset: 2px;
+        }
+
+        /* Remove default outline and use custom */
+        .btn:focus:not(:focus-visible) {
+            outline: none;
+        }
+
+        /* Instructions Container */
+        .instructions-container {
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .usage-guide {
+            background: var(--bg-transparent-white);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            border: 2px solid rgba(255, 200, 100, 0.3);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .usage-guide h2 {
+            color: var(--color-gold);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .usage-guide p {
+            color: #ddd;
+            line-height: 1.8;
+        }
+
+        .usage-guide .highlight-gold {
+            color: var(--color-gold);
+        }
+
+        .usage-guide .highlight-green {
+            color: var(--color-green);
+        }
+
+        .usage-guide .highlight-purple {
+            color: var(--color-purple);
+        }
+
+        .action-section {
+            text-align: center;
+            margin: var(--spacing-xl) 0;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            margin: var(--spacing-xl) 0;
+        }
+
+        .example-section {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .example-section p {
+            color: var(--color-gold);
+            font-size: 1.1em;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .example-section img {
+            max-width: 100%;
+            border-radius: var(--radius-md);
+            border: 3px solid rgba(255, 200, 100, 0.5);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .credit-section {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .credit-section p {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9em;
+        }
+
+        .credit-section .highlight-gold {
+            color: var(--color-gold);
         }
 
         /* Summary */
@@ -683,40 +840,40 @@
 
         <!-- Main Planner Page -->
         <div class="page active" id="plannerPage">
-            <div style="text-align: center; padding: 40px 20px; max-width: 900px; margin: 0 auto;">
-                <div style="background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 30px; border: 2px solid rgba(255, 200, 100, 0.3); margin-bottom: 30px;">
-                    <h2 style="color: #ffd700; margin-bottom: 20px;">📋 ขั้นตอนการใช้งาน</h2>
-                    <div style="text-align: left; color: #ddd; line-height: 1.8;">
-                        <p>1. เปิดหน้า <strong style="color: #ffd700;">Older Skill</strong> ในเกม 7K ก่อน (ดูตัวอย่างด้านล่าง)</p>
-                        <p>2. กดปุ่ม <strong style="color: #4ecdc4;">📸 จับภาพหน้าจอ</strong></p>
+            <div class="instructions-container">
+                <div class="usage-guide">
+                    <h2>📋 ขั้นตอนการใช้งาน</h2>
+                    <div class="usage-guide">
+                        <p>1. เปิดหน้า <strong class="highlight-gold">Older Skill</strong> ในเกม 7K ก่อน (ดูตัวอย่างด้านล่าง)</p>
+                        <p>2. กดปุ่ม <strong class="highlight-green">📸 จับภาพหน้าจอ</strong></p>
                         <p>3. เลือกหน้าต่างเกมที่เปิดไว้</p>
-                        <p>4. <strong style="color: #00ff00;">คลิก</strong> ที่สกิลที่ต้องการ - ระบบจะครอบให้อัตโนมัติ</p>
+                        <p>4. <strong class="highlight-green">คลิก</strong> ที่สกิลที่ต้องการ - ระบบจะครอบให้อัตโนมัติ</p>
                         <p>5. ลากเรียงลำดับสกิลได้ตามต้องการ</p>
-                        <p>6. กรอกชื่อตัวละคร แล้วกด <strong style="color: #4ecdc4;">👁️ ดูผลลัพธ์</strong> เพื่อดูรูปก่อน ถ้าพอใจแล้วกด <strong style="color: #a855f7;">📥 ดาวน์โหลด</strong></p>
+                        <p>6. กรอกชื่อตัวละคร แล้วกด <strong class="highlight-green">👁️ ดูผลลัพธ์</strong> เพื่อดูรูปก่อน ถ้าพอใจแล้วกด <strong class="highlight-purple">📥 ดาวน์โหลด</strong></p>
                     </div>
                 </div>
 
-                <div style="text-align: center; margin: 30px 0;">
-                    <button class="header-screenshot-btn" onclick="goToCapturePage()">
+                <div class="action-section">
+                    <button class="header-screenshot-btn" onclick="goToCapturePage()" aria-label="จับภาพหน้าจอเพื่อเลือกสกิล">
                         📸 จับภาพหน้าจอ (Screenshot)
                     </button>
                 </div>
 
-                <hr style="border: none; border-top: 1px solid rgba(255, 255, 255, 0.2); margin: 30px 0;">
+                <hr class="divider">
 
-                <div style="margin-bottom: 30px;">
-                    <p style="color: #ffd700; font-size: 1.1em; margin-bottom: 15px;">🖼️ ตัวอย่างหน้าที่ต้องเปิด (Older Skill)</p>
-                    <img src="Example.png" alt="ตัวอย่างหน้า Older Skill" style="max-width: 100%; border-radius: 10px; border: 3px solid rgba(255, 200, 100, 0.5); box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+                <div class="example-section">
+                    <p>🖼️ ตัวอย่างหน้าที่ต้องเปิด (Older Skill)</p>
+                    <img src="Example.png" alt="ตัวอย่างหน้า Older Skill" loading="lazy">
                 </div>
 
-                <div style="margin-bottom: 30px;">
-                    <p style="color: #a855f7; font-size: 1.1em; margin-bottom: 15px;">📷 ตัวอย่างผลลัพธ์เมื่อ Export</p>
-                    <img src="Finish.png" alt="ตัวอย่างผลลัพธ์ Export" style="max-width: 100%; border-radius: 10px; border: 3px solid rgba(168, 85, 247, 0.5); box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+                <div class="example-section">
+                    <p>📷 ตัวอย่างผลลัพธ์เมื่อ Export</p>
+                    <img src="Finish.png" alt="ตัวอย่างผลลัพธ์ Export" loading="lazy">
                 </div>
 
-                <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <p style="color: rgba(255,255,255,0.5); font-size: 0.9em;">
-                        สร้างโดย <strong style="color: #ffd700;">snowb4ll</strong> | 7K Skill Planner
+                <div class="credit-section">
+                    <p>
+                        สร้างโดย <strong class="highlight-gold">snowb4ll</strong> | 7K Skill Planner
                     </p>
                 </div>
             </div>
@@ -731,10 +888,10 @@
                 </div>
 
                 <div class="zoom-controls">
-                    <button class="zoom-btn" onclick="zoomOut()">➖</button>
-                    <span class="zoom-level" id="zoomLevel">100%</span>
-                    <button class="zoom-btn" onclick="zoomIn()">➕</button>
-                    <button class="zoom-btn" onclick="resetZoom()">🔄 Reset</button>
+                    <button class="zoom-btn" onclick="zoomOut()" aria-label="ซูมออก">➖</button>
+                    <span class="zoom-level" id="zoomLevel" aria-live="polite">100%</span>
+                    <button class="zoom-btn" onclick="zoomIn()" aria-label="ซูมเข้า">➕</button>
+                    <button class="zoom-btn" onclick="resetZoom()" aria-label="รีเซ็ตซูม">🔄 Reset</button>
                 </div>
 
                 <div class="canvas-container" id="canvasContainer">
@@ -749,8 +906,9 @@
                 </div>
 
                 <div style="text-align: center; margin-top: 20px;">
-                    <label style="color: #ffd700; margin-right: 10px;">ชื่อ:</label>
+                    <label for="skillName" style="color: #ffd700; margin-right: 10px;">ชื่อ:</label>
                     <input type="text" id="skillName" placeholder="ระบุชื่อ เช่น น่องไก้, ไคล์, แทโอ"
+                           aria-label="ชื่อตัวละคร"
                            style="padding: 10px 20px; border-radius: 10px; border: 2px solid rgba(255,200,100,0.5);
                            background: rgba(255,255,255,0.1); color: #fff; font-size: 1em; width: 250px;">
                 </div>
@@ -760,26 +918,26 @@
                 </div>
 
                 <div class="capture-controls">
-                    <button class="btn btn-undo" id="undoCaptureBtn" onclick="undoLastCapture()" disabled>↩ ยกเลิกที่เลือก</button>
-                    <button class="btn btn-primary" id="previewBtn" onclick="previewImage()" disabled>👁️ ดูผลลัพธ์</button>
-                    <button class="btn btn-clear" onclick="clearCaptured()">🗑 ล้างทั้งหมด</button>
-                    <button class="btn btn-secondary" onclick="goToPlannerPage()">✕ กลับหน้าหลัก</button>
+                    <button class="btn btn-undo" id="undoCaptureBtn" onclick="undoLastCapture()" disabled aria-label="ยกเลิกสกิลล่าสุดที่เลือก">↩ ยกเลิกที่เลือก</button>
+                    <button class="btn btn-primary" id="previewBtn" onclick="previewImage()" disabled aria-label="ดูตัวอย่างก่อนดาวน์โหลด">👁️ ดูผลลัพธ์</button>
+                    <button class="btn btn-clear" onclick="clearCaptured()" aria-label="ล้างสกิลทั้งหมดที่เลือก">🗑 ล้างทั้งหมด</button>
+                    <button class="btn btn-secondary" onclick="goToPlannerPage()" aria-label="กลับไปหน้าหลัก">✕ กลับหน้าหลัก</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- History Button -->
-    <button class="btn-history-open" onclick="toggleHistory()" title="ดูประวัติการ Export ที่บันทึกไว้">
+    <button class="btn-history-open" onclick="toggleHistory()" aria-label="ดูประวัติการ Export ที่บันทึกไว้" aria-expanded="false" aria-controls="historyModal">
         📜 ประวัติการ Export
     </button>
 
     <!-- History Modal -->
-    <div class="history-modal" id="historyModal">
+    <div class="history-modal" id="historyModal" role="dialog" aria-modal="true" aria-labelledby="historyTitle">
         <div class="history-content">
             <div class="history-header">
-                <h2>📜 ประวัติการ Export</h2>
-                <button class="history-close" onclick="toggleHistory()">✕</button>
+                <h2 id="historyTitle">📜 ประวัติการ Export</h2>
+                <button class="history-close" onclick="toggleHistory()" aria-label="ปิดประวัติ">✕</button>
             </div>
             <div id="historyContainer">
                 <div class="empty-state">ยังไม่มีประวัติการ export</div>
@@ -788,25 +946,19 @@
     </div>
 
     <!-- Preview Modal -->
-    <div class="preview-modal" id="previewModal">
+    <div class="preview-modal" id="previewModal" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
         <div class="preview-content">
-            <button class="preview-close" onclick="closePreview()">✕</button>
-            <img id="previewImage" src="" alt="Preview">
+            <h2 id="previewTitle" class="visually-hidden">ดูตัวอย่างก่อนดาวน์โหลด</h2>
+            <button class="preview-close" onclick="closePreview()" aria-label="ปิดตัวอย่าง">✕</button>
+            <img id="previewImage" src="" alt="ตัวอย่างผลลัพธ์">
             <div class="preview-actions">
-                <button class="btn btn-primary" onclick="downloadPreview()">📥 ดาวน์โหลด</button>
-                <button class="btn btn-secondary" onclick="closePreview()">ปิด</button>
+                <button class="btn btn-primary" onclick="downloadPreview()" aria-label="ดาวน์โหลดรูปภาพ">📥 ดาวน์โหลด</button>
+                <button class="btn btn-secondary" onclick="closePreview()" aria-label="ปิดตัวอย่าง">ปิด</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Default skills data (empty by default)
-        const defaultSkills = [];
-
-        let skills = [...defaultSkills];
-        let selectedSkills = [];
-        let customImages = {};
-
         // Capture state
         let captureImage = null;
         let capturedSkills = [];
@@ -814,10 +966,17 @@
         let baseCanvasWidth = 0;
         let baseCanvasHeight = 0;
 
-        // Initialize
-        function init() {
-            renderSkillGrid();
-            renderSelectedSkills();
+        // Input sanitization to prevent XSS
+        function sanitizeInput(input) {
+            const div = document.createElement('div');
+            div.textContent = input;
+            return div.innerHTML;
+        }
+
+        // Get sanitized skill name
+        function getSkillName() {
+            const rawName = document.getElementById("skillName").value.trim();
+            return sanitizeInput(rawName) || "ไม่ระบุชื่อ";
         }
 
         // Page Navigation
@@ -830,146 +989,6 @@
             document.getElementById("plannerPage").classList.remove("active");
             document.getElementById("capturePage").classList.add("active");
             captureScreen();
-        }
-
-        // Render skill grid
-        function renderSkillGrid() {
-            const grid = document.getElementById("skillGrid");
-            grid.innerHTML = "";
-
-            skills.forEach(skill => {
-                const item = document.createElement("div");
-                item.className = "skill-item";
-                item.onclick = () => selectSkill(skill.id);
-
-                if (customImages[skill.id]) {
-                    item.innerHTML = `
-                        <img src="${customImages[skill.id]}" alt="${skill.name}">
-                        <span class="skill-number">${skill.id}</span>
-                    `;
-                } else {
-                    item.innerHTML = `
-                        <span class="skill-number">${skill.id}</span>
-                        <span class="skill-icon">${skill.icon}</span>
-                        <span class="skill-name">${skill.name}</span>
-                    `;
-                }
-
-                grid.appendChild(item);
-            });
-        }
-
-        // Select skill
-        function selectSkill(skillId) {
-            const skill = skills.find(s => s.id === skillId);
-            if (skill) {
-                selectedSkills.push({...skill});
-                renderSelectedSkills();
-            }
-        }
-
-        // Render selected skills
-        function renderSelectedSkills() {
-            const container = document.getElementById("selectedSkills");
-
-            if (selectedSkills.length === 0) {
-                container.innerHTML = '<div class="empty-state">คลิกที่สกิลด้านซ้ายเพื่อเพิ่มลงในลำดับ</div>';
-                updateSummary();
-                return;
-            }
-
-            container.innerHTML = "";
-
-            selectedSkills.forEach((skill, index) => {
-                const item = document.createElement("div");
-                item.className = "selected-skill";
-                item.draggable = true;
-
-                // Drag events
-                item.ondragstart = (e) => {
-                    e.dataTransfer.setData("text/plain", index);
-                    item.classList.add("dragging");
-                };
-                item.ondragend = () => {
-                    item.classList.remove("dragging");
-                };
-                item.ondragover = (e) => {
-                    e.preventDefault();
-                };
-                item.ondrop = (e) => {
-                    e.preventDefault();
-                    const fromIndex = parseInt(e.dataTransfer.getData("text/plain"));
-                    moveSkill(fromIndex, index);
-                };
-
-                // Click to remove
-                item.onclick = () => removeSkill(index);
-
-                if (customImages[skill.id]) {
-                    item.innerHTML = `
-                        <img src="${customImages[skill.id]}" alt="${skill.name}">
-                        <span class="order-number">${index + 1}</span>
-                    `;
-                } else {
-                    item.innerHTML = `
-                        <span class="skill-icon">${skill.icon}</span>
-                        <span class="order-number">${index + 1}</span>
-                    `;
-                }
-
-                container.appendChild(item);
-            });
-
-            updateSummary();
-        }
-
-        // Remove skill
-        function removeSkill(index) {
-            selectedSkills.splice(index, 1);
-            renderSelectedSkills();
-        }
-
-        // Move skill (drag and drop)
-        function moveSkill(fromIndex, toIndex) {
-            if (fromIndex === toIndex) return;
-            const item = selectedSkills.splice(fromIndex, 1)[0];
-            selectedSkills.splice(toIndex, 0, item);
-            renderSelectedSkills();
-        }
-
-        // Undo last
-        function undoLast() {
-            if (selectedSkills.length > 0) {
-                selectedSkills.pop();
-                renderSelectedSkills();
-            }
-        }
-
-        // Clear all
-        function clearAll() {
-            if (selectedSkills.length > 0 && confirm("ต้องการล้างลำดับสกิลทั้งหมดใช่หรือไม่?")) {
-                selectedSkills = [];
-                renderSelectedSkills();
-            }
-        }
-
-        // Update summary
-        function updateSummary() {
-            const summary = document.getElementById("summaryText");
-
-            if (selectedSkills.length === 0) {
-                summary.textContent = "ยังไม่ได้เลือกสกิล";
-                return;
-            }
-
-            // Count each skill
-            const counts = {};
-            selectedSkills.forEach(s => {
-                counts[s.name] = (counts[s.name] || 0) + 1;
-            });
-
-            const parts = Object.entries(counts).map(([name, count]) => name + " x" + count);
-            summary.textContent = "ทั้งหมด " + selectedSkills.length + " สกิล: " + parts.join(", ");
         }
 
         // Capture screen using Screen Capture API
@@ -1256,18 +1275,17 @@
         }
 
         // Preview image before export
-        function previewImage() {
+        async function previewImage() {
             if (capturedSkills.length === 0) {
                 alert("กรุณาเลือกสกิลอย่างน้อย 1 อัน");
                 return;
             }
 
-            // Get skill name from input
-            const skillName = document.getElementById("skillName").value.trim();
-            const displayName = skillName || "ไม่ระบุชื่อ";
+            // Get sanitized skill name
+            const displayName = getSkillName();
 
             // Create export canvas
-            const exportCanvas = createExportCanvas(displayName);
+            const exportCanvas = await createExportCanvas(displayName);
 
             // Show preview modal
             document.getElementById("previewImage").src = exportCanvas.toDataURL("image/png");
@@ -1275,8 +1293,8 @@
             document.getElementById("previewModal").style.display = "flex";
         }
 
-        // Create export canvas (reusable function)
-        function createExportCanvas(displayName) {
+        // Create export canvas (async function to handle image loading)
+        async function createExportCanvas(displayName) {
             // Calculate used tier (สกิล - 1) * 4
             const usedTier = (capturedSkills.length - 1) * 4;
             const maxTier = 70;
@@ -1310,16 +1328,22 @@
             const tierText = capturedSkills.length + " Skills - จบ " + usedTier + "/" + maxTier + " เทิร์น";
             ctx.fillText(tierText, exportCanvas.width / 2, 45);
 
-            // Draw skills synchronously
-            capturedSkills.forEach((skill, index) => {
+            // Draw skills with proper loading
+            for (const [index, skill] of capturedSkills.entries()) {
                 const col = index % cols;
                 const row = Math.floor(index / cols);
                 const x = padding + col * (skillSize + padding);
                 const y = padding + row * (skillSize + padding) + 55;
 
-                // Draw skill image directly from base64
+                // Load image before drawing
                 const img = new Image();
-                img.src = skill.image;
+                await new Promise((resolve) => {
+                    img.onload = resolve;
+                    img.onerror = resolve; // Continue even if load fails
+                    img.src = skill.image;
+                });
+
+                // Draw skill image
                 ctx.drawImage(img, x, y, skillSize, skillSize);
 
                 // Draw order number circle
@@ -1333,31 +1357,9 @@
                 ctx.font = "bold 12px Segoe UI";
                 ctx.textAlign = "center";
                 ctx.fillText(index + 1, x + skillSize - 10, y + 14);
-            });
-
-            return exportCanvas;
-        }
-
-        // Export image (now uses createExportCanvas)
-        function exportImage() {
-            if (capturedSkills.length === 0) {
-                alert("กรุณาเลือกสกิลอย่างน้อย 1 อัน");
-                return;
             }
 
-            // Get skill name from input
-            const skillName = document.getElementById("skillName").value.trim();
-            const displayName = skillName || "ไม่ระบุชื่อ";
-
-            // Create export canvas
-            const exportCanvas = createExportCanvas(displayName);
-
-            // Download canvas as image
-            downloadCanvas(exportCanvas, displayName);
-
-            // Close preview modal if open
-            document.getElementById("previewModal").style.display = "none";
-            currentPreviewCanvas = null;
+            return exportCanvas;
         }
 
         // Download canvas as image
@@ -1370,7 +1372,7 @@
             link.href = canvas.toDataURL("image/png");
             link.click();
 
-            // Save to history
+            // Save to history with sanitized name
             saveToHistory(name, canvas.toDataURL("image/png"), usedTier);
         }
 
@@ -1389,9 +1391,10 @@
 
         function saveToHistory(name, imageData, usedTier) {
             const history = getHistory();
+            const sanitizedName = sanitizeInput(name || "ไม่ระบุชื่อ");
             const record = {
                 id: Date.now(),
-                name: name || "ไม่ระบุชื่อ",
+                name: sanitizedName,
                 image: imageData,
                 usedTier: usedTier,
                 skillCount: capturedSkills.length,
@@ -1442,21 +1445,25 @@
 
                 // Preview thumbnail
                 const previewHtml = record.image
-                    ? `<div class="history-item-preview" onclick="openPreview(${record.id})"><img src="${record.image}" alt="preview"></div>`
+                    ? `<div class="history-item-preview" onclick="openPreview(${record.id})" role="button" tabindex="0" aria-label="ดูตัวอย่าง ${record.name}"><img src="${record.image}" alt="ตัวอย่าง ${record.name}"></div>`
                     : `<div class="history-item-preview empty">ไม่มีรูป</div>`;
 
                 div.innerHTML = `
                     ${previewHtml}
                     <div class="history-info">
-                        <strong>${record.name}</strong>
+                        <strong></strong>
                         <span class="history-tier">${record.skillCount} Skills - จบ ${record.usedTier}/70</span>
                         <span class="history-time">${record.timestamp}</span>
                     </div>
                     <div class="history-actions">
-                        ${record.image ? `<button class="btn-history" onclick="downloadHistoryItem(${record.id})">📥 ดาวน์โหลด</button>` : '<span style="color:#aaa;font-size:0.8em;">รูปถูกลบแล้ว</span>'}
-                        <button class="btn-history btn-delete" onclick="deleteFromHistory(${record.id})">🗑</button>
+                        ${record.image ? `<button class="btn-history" onclick="downloadHistoryItem(${record.id})" aria-label="ดาวน์โหลด ${record.name}">📥 ดาวน์โหลด</button>` : '<span style="color:#aaa;font-size:0.8em;">รูปถูกลบแล้ว</span>'}
+                        <button class="btn-history btn-delete" onclick="deleteFromHistory(${record.id})" aria-label="ลบประวัติ ${record.name}">🗑</button>
                     </div>
                 `;
+
+                // Set name text content safely (prevent XSS)
+                div.querySelector('.history-info strong').textContent = record.name;
+
                 container.appendChild(div);
             });
         }
@@ -1483,8 +1490,7 @@
 
         function downloadPreview() {
             if (currentPreviewCanvas) {
-                const skillName = document.getElementById("skillName").value.trim();
-                const displayName = skillName || "ไม่ระบุชื่อ";
+                const displayName = getSkillName();
                 const usedTier = (capturedSkills.length - 1) * 4;
                 const link = document.createElement("a");
                 let filename = displayName.replace(/[^a-zA-Z0-9\u0E00-\u0E7Fก-๙]/g, "_");
@@ -1494,7 +1500,8 @@
                 link.click();
             } else if (currentPreviewRecord && currentPreviewRecord.image) {
                 const link = document.createElement("a");
-                link.download = `${currentPreviewRecord.name}_จบ${currentPreviewRecord.usedTier}_70.png`;
+                const sanitizedName = sanitizeInput(currentPreviewRecord.name);
+                link.download = `${sanitizedName}_จบ${currentPreviewRecord.usedTier}_70.png`;
                 link.href = currentPreviewRecord.image;
                 link.click();
             }
@@ -1505,7 +1512,8 @@
             const record = history.find(item => item.id === id);
             if (record && record.image) {
                 const link = document.createElement("a");
-                link.download = `${record.name}_จบ${record.usedTier}_70.png`;
+                const sanitizedName = sanitizeInput(record.name);
+                link.download = `${sanitizedName}_จบ${record.usedTier}_70.png`;
                 link.href = record.image;
                 link.click();
             }
@@ -1513,8 +1521,13 @@
 
         function toggleHistory() {
             const modal = document.getElementById("historyModal");
-            modal.style.display = modal.style.display === "flex" ? "none" : "flex";
-            if (modal.style.display === "flex") {
+            const button = document.querySelector('.btn-history-open');
+            const isOpen = modal.style.display === "flex";
+
+            modal.style.display = isOpen ? "none" : "flex";
+            button.setAttribute('aria-expanded', !isOpen);
+
+            if (!isOpen) {
                 renderHistory();
             }
         }
@@ -1534,7 +1547,7 @@
         });
 
         // Initialize on load
-        init();
+        // No initialization needed - app starts with planner page
     </script>
 </body>
 </html>

@@ -85,6 +85,13 @@ Filename: `[ชื่อ]_จบY_70.png`
 | 1.1.0 | 2025-01 | Added export history with thumbnails |
 | 1.2.0 | 2025-01 | Added favicon and repository metadata |
 
+| Version | Date | Changes |
+|---------|------|---------|
+| | 1.0.0 | 2025-01 | Initial release with all core features |
+| | 1.1.0 | 2025-01 | Added export history with thumbnails |
+| | 1.2.0 | 2025-01 | Added favicon and repository metadata |
+| | 1.3.0 | 2026-02 | Code refactoring and improvements: Removed unused functions, fixed image loading race condition, added input validation, improved accessibility with ARIA labels and focus styles, added CSS variables, separated inline styles, added lazy loading, added CSP header |
+
 ## Current Status
 
 ✅ **Production Ready** - All core features implemented and deployed.
