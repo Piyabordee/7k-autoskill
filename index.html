@@ -9,7 +9,7 @@
                    script-src 'self' 'unsafe-inline'; 
                    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
                    font-src 'self' https://fonts.gstatic.com;">
-    <title>7K Skill Planner</title>
+    <title>7K Skill Planner - Auto Detection</title>
     <link rel="icon" type="image/png" href="logo.png">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
@@ -548,6 +548,62 @@
             font-weight: bold;
         }
 
+        /* Canvas with overlay buttons */
+        .canvas-with-buttons-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .skill-buttons-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .skill-button {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(78, 205, 196, 0.3);
+            border: 3px solid #4ecdc4;
+            cursor: pointer;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+            transition: all 0.2s;
+            transform: translate(-50%, -50%);
+        }
+
+        .skill-button:hover {
+            background: rgba(78, 205, 196, 0.6);
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.8);
+        }
+
+        .skill-button:active {
+            transform: translate(-50%, -50%) scale(0.95);
+            background: rgba(78, 205, 196, 0.8);
+        }
+
+        .skill-button.selected {
+            background: rgba(255, 107, 107, 0.4);
+            border-color: #ff6b6b;
+        }
+
         .captured-skills {
             display: flex;
             gap: 15px;
@@ -835,7 +891,7 @@
 <body>
     <div class="container">
         <div class="page-header">
-            <h1>⚔️ 7K Skill Planner ⚔️</h1>
+            <h1>⚔️ 7K Skill Planner - Auto Detection ⚔️</h1>
         </div>
 
         <!-- Main Planner Page -->
@@ -845,17 +901,17 @@
                     <h2>📋 ขั้นตอนการใช้งาน</h2>
                     <div class="usage-guide">
                         <p>1. เปิดหน้า <strong class="highlight-gold">Older Skill</strong> ในเกม 7K ก่อน (ดูตัวอย่างด้านล่าง)</p>
-                        <p>2. กดปุ่ม <strong class="highlight-green">📸 จับภาพหน้าจอ</strong></p>
-                        <p>3. เลือกหน้าต่างเกมที่เปิดไว้</p>
-                        <p>4. <strong class="highlight-green">คลิก</strong> ที่สกิลที่ต้องการ - ระบบจะครอบให้อัตโนมัติ</p>
-                        <p>5. ลากเรียงลำดับสกิลได้ตามต้องการ</p>
+                        <p>2. กดปุ่ม <strong class="highlight-green">📸 จับภาพหน้าจอ - ตรวจจับอัตโนมัติ</strong></p>
+                        <p>3. เลือกหน้าต่างเกมที่เปิดไว้ - <strong class="highlight-green">ระบบจะตรวจจับสกิล 10 อันอัตโนมัติ</strong></p>
+                        <p>4. <strong class="highlight-green">คลิกที่สกิล</strong>ที่ตรวจจับได้เพื่อเพิ่มเข้าลำดับ - <strong class="highlight-green">สามารถคลิกซ้ำได้</strong></p>
+                        <p>5. ลากเรียงลำดับสกิลได้ตามต้องการ (คลิก X เพื่อลบ)</p>
                         <p>6. กรอกชื่อตัวละคร แล้วกด <strong class="highlight-green">👁️ ดูผลลัพธ์</strong> เพื่อดูรูปก่อน ถ้าพอใจแล้วกด <strong class="highlight-purple">📥 ดาวน์โหลด</strong></p>
                     </div>
                 </div>
 
                 <div class="action-section">
-                    <button class="header-screenshot-btn" onclick="goToCapturePage()" aria-label="จับภาพหน้าจอเพื่อเลือกสกิล">
-                        📸 จับภาพหน้าจอ (Screenshot)
+                    <button class="header-screenshot-btn" onclick="goToCapturePage()" aria-label="จับภาพหน้าจอเพื่อตรวจจับสกิลอัตโนมัติ">
+                        📸 จับภาพหน้าจอ - ตรวจจับอัตโนมัติ
                     </button>
                 </div>
 
@@ -883,26 +939,22 @@
         <div class="page" id="capturePage">
             <div class="capture-page">
                 <div class="capture-header">
-                    <h2>คลิกที่สกิลที่ต้องการ</h2>
-                    <p>คลิกตรงกลางสกิลแต่ละอัน - ระบบจะครอบสี่เหลี่ยมให้อัตโนมัติ</p>
+                    <h2>คลิกที่สกิลในรูปเพื่อเพิ่มเข้าลำดับ</h2>
+                    <p>คลิกที่ปุ่มสกิลในรูป - สามารถคลิกซ้ำได้</p>
                 </div>
 
-                <div class="zoom-controls">
-                    <button class="zoom-btn" onclick="zoomOut()" aria-label="ซูมออก">➖</button>
-                    <span class="zoom-level" id="zoomLevel" aria-live="polite">100%</span>
-                    <button class="zoom-btn" onclick="zoomIn()" aria-label="ซูมเข้า">➕</button>
-                    <button class="zoom-btn" onclick="resetZoom()" aria-label="รีเซ็ตซูม">🔄 Reset</button>
-                </div>
-
-                <div class="canvas-container" id="canvasContainer">
-                    <div class="canvas-wrapper">
+                <div class="canvas-with-buttons-container" id="canvasWithButtonsContainer" style="display: none;">
+                    <div class="canvas-wrapper" style="position: relative; display: inline-block;">
                         <canvas id="captureCanvas"></canvas>
+                        <div class="skill-buttons-overlay" id="skillButtonsOverlay">
+                            <!-- ปุ่มสกิลจะถูกสร้างที่นี่ด้วย JavaScript -->
+                        </div>
                     </div>
                 </div>
 
-                <div class="panel-title" style="margin-top: 30px;">ลำดับสกิล (ลากเรียงลำดับได้)</div>
-                <div class="selected-skills" id="capturedSkills">
-                    <div class="empty-state">ลากสี่เหลี่ยมครอบสกิลด้านบน</div>
+                <div class="panel-title" style="margin-top: 30px;">ลำดับสกิลที่เลือก (ลากเรียงลำดับได้)</div>
+                <div class="selected-skills" id="selectedSkills">
+                    <div class="empty-state">คลิกที่สกิลในรูปเพื่อเพิ่มเข้าลำดับ</div>
                 </div>
 
                 <div style="text-align: center; margin-top: 20px;">
@@ -920,7 +972,7 @@
                 <div class="capture-controls">
                     <button class="btn btn-undo" id="undoCaptureBtn" onclick="undoLastCapture()" disabled aria-label="ยกเลิกสกิลล่าสุดที่เลือก">↩ ยกเลิกที่เลือก</button>
                     <button class="btn btn-primary" id="previewBtn" onclick="previewImage()" disabled aria-label="ดูตัวอย่างก่อนดาวน์โหลด">👁️ ดูผลลัพธ์</button>
-                    <button class="btn btn-clear" onclick="clearCaptured()" aria-label="ล้างสกิลทั้งหมดที่เลือก">🗑 ล้างทั้งหมด</button>
+                    <button class="btn btn-clear" onclick="clearSelected()" aria-label="ล้างสกิลทั้งหมดที่เลือก">🗑 ล้างทั้งหมด</button>
                     <button class="btn btn-secondary" onclick="goToPlannerPage()" aria-label="กลับไปหน้าหลัก">✕ กลับหน้าหลัก</button>
                 </div>
             </div>
@@ -961,7 +1013,8 @@
     <script>
         // Capture state
         let captureImage = null;
-        let capturedSkills = [];
+        let detectedSkills = [];    // 10 skills from auto-detection
+        let selectedSkills = [];     // Skills selected by user
         let zoomScale = 1;
         let baseCanvasWidth = 0;
         let baseCanvasHeight = 0;
@@ -991,6 +1044,76 @@
             captureScreen();
         }
 
+        // ==================== PATTERN DETECTION ====================
+        // Pattern settings for auto-detection (2 rows × 5 columns)
+        const PATTERN_SETTINGS = {
+            startX: 347,
+            startY: 365,
+            gapX: 173,
+            gapY: 70,
+            skillSize: 70,
+            rows: 2,
+            cols: 5
+        };
+
+        // Auto-detect skills using pattern
+        function autoDetectSkills() {
+            console.log("autoDetectSkills called");
+            console.log("captureImage:", captureImage);
+
+            if (!captureImage) {
+                console.error("captureImage is null!");
+                return;
+            }
+
+            if (!captureImage.canvas) {
+                console.error("captureImage.canvas is null!");
+                return;
+            }
+
+            const { startX, startY, gapX, gapY, skillSize, rows, cols } = PATTERN_SETTINGS;
+            console.log("Pattern settings:", { startX, startY, gapX, gapY, skillSize, rows, cols });
+
+            // Clear previous skills
+            detectedSkills = [];
+            selectedSkills = [];
+
+            // Detect skills based on pattern
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const x = startX + col * gapX;
+                    const y = startY + row * gapY;
+
+                    console.log(`Detecting skill at (${x}, ${y})`);
+
+                    // Create cropped canvas
+                    const cropCanvas = document.createElement("canvas");
+                    cropCanvas.width = 60;
+                    cropCanvas.height = 60;
+                    const cropCtx = cropCanvas.getContext("2d");
+
+                    // Draw the cropped region (centered on the position)
+                    cropCtx.drawImage(
+                        captureImage.canvas,
+                        Math.max(0, x - skillSize/2),
+                        Math.max(0, y - skillSize/2),
+                        skillSize, skillSize,
+                        0, 0, 60, 60
+                    );
+
+                    // Add to detected skills
+                    detectedSkills.push({
+                        id: detectedSkills.length + 1,
+                        image: cropCanvas.toDataURL(),
+                        name: "สกิล " + (detectedSkills.length + 1)
+                    });
+                }
+            }
+
+            console.log(`Auto-detected ${detectedSkills.length} skills using pattern`);
+            console.log("detectedSkills:", detectedSkills);
+        }
+
         // Capture screen using Screen Capture API
         async function captureScreen() {
             try {
@@ -1003,23 +1126,45 @@
                 video.srcObject = stream;
                 await video.play();
 
+                console.log("Video playing, waiting for capture...");
+
                 // Capture frame
                 setTimeout(() => {
+                    console.log("Capturing frame...");
                     const canvas = document.createElement("canvas");
                     canvas.width = video.videoWidth;
                     canvas.height = video.videoHeight;
                     const ctx = canvas.getContext("2d");
                     ctx.drawImage(video, 0, 0);
 
+                    console.log("Canvas created:", canvas.width, "x", canvas.height);
+
                     // Stop all tracks
                     stream.getTracks().forEach(track => track.stop());
 
-                    // Load captured image
-                    captureImage = new Image();
-                    captureImage.onload = function() {
-                        setupCaptureCanvas();
+                    // Store canvas directly (no need to create Image object)
+                    captureImage = {
+                        naturalWidth: canvas.width,
+                        naturalHeight: canvas.height,
+                        canvas: canvas
                     };
-                    captureImage.src = canvas.toDataURL("image/png");
+
+                    console.log("captureImage set:", captureImage);
+
+                    // Setup and detect skills
+                    console.log("Setting up capture canvas...");
+                    setupCaptureCanvas();
+
+                    console.log("Auto-detecting skills...");
+                    autoDetectSkills();
+
+                    console.log("Detected skills:", detectedSkills.length);
+
+                    console.log("Creating skill buttons...");
+                    createSkillButtons();
+
+                    console.log("Rendering selected skills...");
+                    renderSelectedSkills();
                 }, 100);
 
             } catch (err) {
@@ -1036,11 +1181,28 @@
         // Setup capture canvas
         function setupCaptureCanvas() {
             const canvas = document.getElementById("captureCanvas");
+            if (!canvas) {
+                console.error("Capture canvas not found!");
+                return;
+            }
+
             const ctx = canvas.getContext("2d");
+            if (!ctx) {
+                console.error("Could not get canvas context!");
+                return;
+            }
+
+            console.log("setupCaptureCanvas: canvas found", canvas);
+
+            // Show the canvas container
+            const container = document.getElementById("canvasWithButtonsContainer");
+            if (container) {
+                container.style.display = "block";
+            }
 
             // Reset capture state
-            capturedSkills = [];
-            renderCapturedSkills();
+            detectedSkills = [];
+            selectedSkills = [];
             zoomScale = 1;
 
             // Calculate base size (larger for better visibility)
@@ -1051,6 +1213,8 @@
             let width = captureImage.naturalWidth;
             let height = captureImage.naturalHeight;
 
+            console.log("Image size:", width, "x", height);
+
             const scale = Math.min(maxWidth / width, maxHeight / height, 1.5);
             baseCanvasWidth = width * scale;
             baseCanvasHeight = height * scale;
@@ -1058,12 +1222,14 @@
             canvas.width = baseCanvasWidth;
             canvas.height = baseCanvasHeight;
 
-            // Draw image
-            ctx.drawImage(captureImage, 0, 0, width, height, 0, 0, baseCanvasWidth, baseCanvasHeight);
+            console.log("Canvas size set to:", baseCanvasWidth, "x", baseCanvasHeight);
 
-            // Store scale info for cropping
-            captureImage.scaleX = width / baseCanvasWidth;
-            captureImage.scaleY = height / baseCanvasHeight;
+            // Draw image (using canvas directly)
+            ctx.drawImage(captureImage.canvas, 0, 0, width, height, 0, 0, baseCanvasWidth, baseCanvasHeight);
+
+            // Store scale info for positioning buttons
+            captureImage.scaleX = baseCanvasWidth / width;
+            captureImage.scaleY = baseCanvasHeight / height;
 
             // Update zoom display
             updateZoomDisplay();
@@ -1098,7 +1264,7 @@
             canvas.width = newWidth;
             canvas.height = newHeight;
 
-            ctx.drawImage(captureImage, 0, 0, captureImage.naturalWidth, captureImage.naturalHeight, 0, 0, newWidth, newHeight);
+            ctx.drawImage(captureImage.canvas, 0, 0, captureImage.naturalWidth, captureImage.naturalHeight, 0, 0, newWidth, newHeight);
 
             // Update scale info for cropping
             captureImage.scaleX = captureImage.naturalWidth / newWidth;
@@ -1111,10 +1277,13 @@
         }
 
         function updateZoomDisplay() {
-            document.getElementById("zoomLevel").textContent = Math.round(zoomScale * 100) + "%";
+            const zoomLevelEl = document.getElementById("zoomLevel");
+            if (zoomLevelEl) {
+                zoomLevelEl.textContent = Math.round(zoomScale * 100) + "%";
+            }
         }
 
-        // Setup canvas mouse events - click to capture
+        // Setup canvas mouse events - click disabled (auto-detection enabled)
         function setupCanvasEvents(canvas, ctx) {
             // Remove old event listeners by cloning
             const newCanvas = canvas.cloneNode(true);
@@ -1122,72 +1291,101 @@
             const newCtx = newCanvas.getContext("2d");
 
             // Redraw image
-            newCtx.drawImage(captureImage, 0, 0, captureImage.naturalWidth, captureImage.naturalHeight,
+            newCtx.drawImage(captureImage.canvas, 0, 0, captureImage.naturalWidth, captureImage.naturalHeight,
                            0, 0, newCanvas.width, newCanvas.height);
 
-            // Click to capture skill
-            newCanvas.addEventListener("click", function(e) {
-                const rect = newCanvas.getBoundingClientRect();
-                const clickX = e.clientX - rect.left;
-                const clickY = e.clientY - rect.top;
-
-                const scaleX = captureImage.naturalWidth / newCanvas.width;
-                const scaleY = captureImage.naturalHeight / newCanvas.height;
-
-                // Fixed crop size (8% of canvas)
-                const cropSizeDisplay = Math.min(newCanvas.width, newCanvas.height) * 0.08;
-                const cropSize = cropSizeDisplay * scaleX;
-
-                const centerX = clickX * scaleX;
-                const centerY = clickY * scaleY;
-
-                // Create crop canvas
-                const cropCanvas = document.createElement("canvas");
-                cropCanvas.width = 60;
-                cropCanvas.height = 60;
-                const cropCtx = cropCanvas.getContext("2d");
-
-                cropCtx.drawImage(
-                    captureImage,
-                    centerX - cropSize / 2,
-                    centerY - cropSize / 2,
-                    cropSize,
-                    cropSize,
-                    0, 0, 60, 60
-                );
-
-                const dataUrl = cropCanvas.toDataURL();
-
-                // Add to captured skills
-                capturedSkills.push({
-                    id: capturedSkills.length + 1,
-                    image: dataUrl,
-                    name: "สกิล " + (capturedSkills.length + 1)
-                });
-
-                renderCapturedSkills();
-
-                // Show visual feedback
-                newCtx.strokeStyle = "#00ff00";
-                newCtx.lineWidth = 3;
-                newCtx.strokeRect(clickX - cropSizeDisplay / 2, clickY - cropSizeDisplay / 2, cropSizeDisplay, cropSizeDisplay);
-
-                // Flash effect
-                setTimeout(() => {
-                    newCtx.drawImage(captureImage, 0, 0, captureImage.naturalWidth, captureImage.naturalHeight,
-                                   0, 0, newCanvas.width, newCanvas.height);
-                }, 200);
-            });
+            // Click functionality disabled - using overlay buttons instead
+            // Canvas is now just for visual reference
         }
 
-        // Render captured skills
-        function renderCapturedSkills() {
-            const container = document.getElementById("capturedSkills");
+        // Create overlay buttons for each skill position
+        function createSkillButtons() {
+            console.log("createSkillButtons called");
+
+            const overlay = document.getElementById("skillButtonsOverlay");
+            if (!overlay) {
+                console.error("skillButtonsOverlay not found!");
+                return;
+            }
+
+            // Clear existing buttons
+            overlay.innerHTML = "";
+
+            const { startX, startY, gapX, gapY, rows, cols } = PATTERN_SETTINGS;
+            const { scaleX, scaleY } = captureImage;
+
+            console.log("Creating buttons with scale:", scaleX, scaleY);
+
+            // Create buttons for each skill position
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const originalX = startX + col * gapX;
+                    const originalY = startY + row * gapY;
+
+                    // Scale position to match displayed canvas
+                    const buttonX = originalX * scaleX;
+                    const buttonY = originalY * scaleY;
+
+                    const button = document.createElement("div");
+                    button.className = "skill-button";
+                    button.style.left = buttonX + "px";
+                    button.style.top = buttonY + "px";
+                    button.textContent = row * cols + col + 1;
+
+                    // Click to select this skill
+                    button.onclick = () => selectSkillByPosition(row, col, button);
+
+                    overlay.appendChild(button);
+
+                    console.log(`Button ${row * cols + col + 1} at (${buttonX}, ${buttonY})`);
+                }
+            }
+
+            console.log("Created", overlay.children.length, "skill buttons");
+        }
+
+        // Select skill by position (when clicking overlay button)
+        function selectSkillByPosition(row, col, buttonElement) {
+            const skillIndex = row * 5 + col; // 5 columns
+            const skill = detectedSkills[skillIndex];
+
+            if (!skill) {
+                console.error("Skill not found at index:", skillIndex);
+                return;
+            }
+
+            console.log("Selecting skill:", skill.name);
+
+            // Add to selected skills
+            selectedSkills.push({
+                id: selectedSkills.length + 1,
+                image: skill.image,
+                name: skill.name
+            });
+
+            renderSelectedSkills();
+
+            // Visual feedback
+            buttonElement.classList.add("selected");
+            setTimeout(() => {
+                buttonElement.classList.remove("selected");
+            }, 200);
+        }
+
+        // Render detected skills (10 skills from auto-detection) - REMOVED, now using overlay buttons
+        // function renderDetectedSkills() { ... }
+
+        // Select a skill - REMOVED, now using selectSkillByPosition()
+        // function selectSkill(index) { ... }
+
+        // Render selected skills (user's selected order)
+        function renderSelectedSkills() {
+            const container = document.getElementById("selectedSkills");
             const undoBtn = document.getElementById("undoCaptureBtn");
             const previewBtn = document.getElementById("previewBtn");
 
-            if (capturedSkills.length === 0) {
-                container.innerHTML = '<div class="empty-state">ลากสี่เหลี่ยมครอบสกิลด้านบน</div>';
+            if (selectedSkills.length === 0) {
+                container.innerHTML = '<div class="empty-state">คลิกที่สกิลด้านบนเพื่อเพิ่มเข้าลำดับ</div>';
                 undoBtn.disabled = true;
                 previewBtn.disabled = true;
                 document.getElementById("captureSummary").textContent = "ยังไม่ได้เลือกสกิล";
@@ -1198,7 +1396,7 @@
             undoBtn.disabled = false;
             previewBtn.disabled = false;
 
-            capturedSkills.forEach((skill, index) => {
+            selectedSkills.forEach((skill, index) => {
                 const div = document.createElement("div");
                 div.className = "selected-skill";
                 div.draggable = true;
@@ -1217,11 +1415,11 @@
                 div.ondrop = (e) => {
                     e.preventDefault();
                     const fromIndex = parseInt(e.dataTransfer.getData("text/plain"));
-                    moveCapturedSkill(fromIndex, index);
+                    moveSelectedSkill(fromIndex, index);
                 };
 
                 // Click to remove
-                div.onclick = () => removeCapturedSkill(index);
+                div.onclick = () => removeSelectedSkill(index);
 
                 div.innerHTML = `
                     <img src="${skill.image}">
@@ -1232,51 +1430,51 @@
 
             // Update summary
             const counts = {};
-            capturedSkills.forEach(s => {
+            selectedSkills.forEach(s => {
                 counts[s.name] = (counts[s.name] || 0) + 1;
             });
             const parts = Object.entries(counts).map(([name, count]) => name + " x" + count);
-            document.getElementById("captureSummary").textContent = "ทั้งหมด " + capturedSkills.length + " สกิล: " + parts.join(", ");
+            document.getElementById("captureSummary").textContent = "เลือกทั้งหมด " + selectedSkills.length + " สกิล: " + parts.join(", ");
         }
 
-        // Move captured skill (drag and drop)
-        function moveCapturedSkill(fromIndex, toIndex) {
+        // Move selected skill (drag and drop)
+        function moveSelectedSkill(fromIndex, toIndex) {
             if (fromIndex === toIndex) return;
-            const item = capturedSkills.splice(fromIndex, 1)[0];
-            capturedSkills.splice(toIndex, 0, item);
-            renderCapturedSkills();
+            const item = selectedSkills.splice(fromIndex, 1)[0];
+            selectedSkills.splice(toIndex, 0, item);
+            renderSelectedSkills();
         }
 
-        // Remove captured skill
-        function removeCapturedSkill(index) {
-            capturedSkills.splice(index, 1);
+        // Remove selected skill
+        function removeSelectedSkill(index) {
+            selectedSkills.splice(index, 1);
             // Reassign IDs
-            capturedSkills.forEach((skill, i) => {
+            selectedSkills.forEach((skill, i) => {
                 skill.id = i + 1;
                 skill.name = "สกิล " + (i + 1);
             });
-            renderCapturedSkills();
+            renderSelectedSkills();
         }
 
-        // Undo last capture
+        // Undo last selection
         function undoLastCapture() {
-            if (capturedSkills.length > 0) {
-                capturedSkills.pop();
-                renderCapturedSkills();
+            if (selectedSkills.length > 0) {
+                selectedSkills.pop();
+                renderSelectedSkills();
             }
         }
 
-        // Clear captured
-        function clearCaptured() {
-            if (capturedSkills.length > 0 && confirm("ต้องการล้างสกิลทั้งหมดใช่หรือไม่?")) {
-                capturedSkills = [];
-                renderCapturedSkills();
+        // Clear selected
+        function clearSelected() {
+            if (selectedSkills.length > 0 && confirm("ต้องการล้างสกิลทั้งหมดใช่หรือไม่?")) {
+                selectedSkills = [];
+                renderSelectedSkills();
             }
         }
 
         // Preview image before export
         async function previewImage() {
-            if (capturedSkills.length === 0) {
+            if (selectedSkills.length === 0) {
                 alert("กรุณาเลือกสกิลอย่างน้อย 1 อัน");
                 return;
             }
@@ -1296,15 +1494,15 @@
         // Create export canvas (async function to handle image loading)
         async function createExportCanvas(displayName) {
             // Calculate used tier (สกิล - 1) * 4
-            const usedTier = (capturedSkills.length - 1) * 4;
+            const usedTier = (selectedSkills.length - 1) * 4;
             const maxTier = 70;
 
             // Create export canvas
             const exportCanvas = document.createElement("canvas");
             const skillSize = 80;
             const padding = 15;
-            const cols = Math.min(capturedSkills.length, 9);
-            const rows = Math.ceil(capturedSkills.length / cols);
+            const cols = Math.min(selectedSkills.length, 9);
+            const rows = Math.ceil(selectedSkills.length / cols);
 
             exportCanvas.width = cols * (skillSize + padding) + padding;
             exportCanvas.height = rows * (skillSize + padding) + padding + 50;
@@ -1325,11 +1523,11 @@
             ctx.fillStyle = "#aaa";
             ctx.font = "14px Segoe UI";
             ctx.textAlign = "center";
-            const tierText = capturedSkills.length + " Skills - จบ " + usedTier + "/" + maxTier + " เทิร์น";
+            const tierText = selectedSkills.length + " Skills - จบ " + usedTier + "/" + maxTier + " เทิร์น";
             ctx.fillText(tierText, exportCanvas.width / 2, 45);
 
             // Draw skills with proper loading
-            for (const [index, skill] of capturedSkills.entries()) {
+            for (const [index, skill] of selectedSkills.entries()) {
                 const col = index % cols;
                 const row = Math.floor(index / cols);
                 const x = padding + col * (skillSize + padding);
@@ -1364,7 +1562,7 @@
 
         // Download canvas as image
         function downloadCanvas(canvas, name) {
-            const usedTier = (capturedSkills.length - 1) * 4;
+            const usedTier = (selectedSkills.length - 1) * 4;
             let filename = name ? name.replace(/[^a-zA-Z0-9\u0E00-\u0E7Fก-๙]/g, "_") : "7k-skill-order";
             filename += "_จบ" + usedTier + "_70.png";
             const link = document.createElement("a");
@@ -1397,7 +1595,7 @@
                 name: sanitizedName,
                 image: imageData,
                 usedTier: usedTier,
-                skillCount: capturedSkills.length,
+                skillCount: selectedSkills.length,
                 timestamp: new Date().toLocaleString("th-TH")
             };
 
@@ -1491,7 +1689,7 @@
         function downloadPreview() {
             if (currentPreviewCanvas) {
                 const displayName = getSkillName();
-                const usedTier = (capturedSkills.length - 1) * 4;
+                const usedTier = (selectedSkills.length - 1) * 4;
                 const link = document.createElement("a");
                 let filename = displayName.replace(/[^a-zA-Z0-9\u0E00-\u0E7Fก-๙]/g, "_");
                 filename += "_จบ" + usedTier + "_70.png";

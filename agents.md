@@ -14,12 +14,13 @@
 
 ### Core Functionality
 1. **Screen Capture** - Using `navigator.mediaDevices.getDisplayMedia()`
-2. **Click-to-Capture** - Click on skills to auto-crop (8% size, square)
-3. **Zoom Controls** - Zoom in/out/reset for better visibility
-4. **Drag & Drop** - Reorder captured skills
-5. **Tier Calculation** - Auto formula: `(skills - 1) × 4` with max 70
-6. **Export as PNG** - Formatted image with title, name, skills, and tier info
-7. **Local History** - Saves up to 20 records in localStorage (last 5 with images)
+2. **Auto-Detection** - Pattern-based skill detection (2 rows × 5 columns grid)
+3. **Overlay Buttons** - Clickable buttons on captured image to select skills
+4. **Drag & Drop** - Reorder selected skills
+5. **Repeat Selection** - Can click same skill multiple times
+6. **Tier Calculation** - Auto formula: `(skills - 1) × 4` with max 70
+7. **Export as PNG** - Formatted image with title, name, skills, and tier info
+8. **Local History** - Saves up to 20 records in localStorage (last 5 with images)
 
 ### UI/UX
 - Main page with usage instructions
@@ -48,7 +49,7 @@ Filename: `[ชื่อ]_จบY_70.png`
 ├── logo.png            # Favicon icon
 ├── README.md           # Documentation
 ├── LICENSE             # MIT License (Copyright 2026 Piyabordee)
-├── agents.md           # This file
+├── AGENTS.md           # This file (includes pattern settings)
 └── .github/
     ├── description     # Repo description for GitHub
     └── custom_topics   # Repo topics
@@ -66,10 +67,58 @@ Filename: `[ชื่อ]_จบY_70.png`
 
 1. **Standalone HTML** - Single file for easy use and sharing
 2. **Local storage only** - No server, privacy-focused
-3. **Fixed crop size (8%)** - Optimized for game UI
-4. **Max 20 history items** - Balances utility with storage limits
-5. **Only 5 images stored** - Older records keep metadata but images are purged
-6. **Thai language UI** - Target audience is Thai players
+3. **Pattern-based Detection** - Grid-based auto-detection (2 rows × 5 columns) with fixed positions
+4. **Pattern Settings** - startX=347, startY=365, gapX=173, gapY=70, skillSize=70, rows=2, cols=5 (see Pattern Detection Settings section above)
+5. **Overlay UI** - Clickable buttons overlaid on captured image for skill selection
+6. **Repeatable Selection** - Users can click same skill multiple times to build their sequence
+7. **Max 20 history items** - Balances utility with storage limits
+8. **Only 5 images stored** - Older records keep metadata but images are purged
+9. **Thai language UI** - Target audience is Thai players
+
+## Pattern Detection Settings
+
+ค่าที่ปรับแล้วให้ตรงกับตำแหน่งสกิลจริงในเกม 7K
+
+### ค่าการตั้งค่ารูปแบบ (Pattern Settings)
+
+| ตั้งค่า | ค่า | หน่วย |
+|---------|------|------|
+| ตำแหน่งเริ่มต้น X | 347 | px |
+| ตำแหน่งเริ่มต้น Y | 365 | px |
+| จำนวนแถว | 2 | - |
+| จำนวนคอลัมน์ | 5 | - |
+| ระยะห่างแนวนอน (Gap X) | 173 | px |
+| ระยะห่างแนวตั้ง (Gap Y) | 70 | px |
+| ขนาดสกิล | 70 | px |
+
+### ตำแหน่งสกิลจริง (จากการวัด)
+
+```
+Skill 1: x=348, y=361
+Skill 2: x=346, y=437
+Skill 3: x=519, y=366
+Skill 4: x=520, y=435
+Skill 5: x=690, y=366
+Skill 6: x=694, y=438
+Skill 7: x=865, y=367
+Skill 8: x=864, y=429
+Skill 9: x=1038, y=363
+Skill 10: x=1033, y=433
+```
+
+### การคำนวณ
+
+**แถวบน (Skills 1, 3, 5, 7, 9)**
+- จุดศูนย์กลาง Y เฉลี่ย: 364.6
+- ช่วง Y: 361-367
+
+**แถวล่าง (Skills 2, 4, 6, 8, 10)**
+- จุดศูนย์กลาง Y เฉลี่ย: 434.4
+- ช่วง Y: 429-438
+
+**ระยะห่าง**
+- Gap Y (ระหว่างแถว): 434.4 - 364.6 = 69.8 ≈ 70
+- Gap X (ระหว่างคอลัมน์): ~172-173
 
 ## Deployment
 
@@ -84,13 +133,8 @@ Filename: `[ชื่อ]_จบY_70.png`
 | 1.0.0 | 2025-01 | Initial release with all core features |
 | 1.1.0 | 2025-01 | Added export history with thumbnails |
 | 1.2.0 | 2025-01 | Added favicon and repository metadata |
-
-| Version | Date | Changes |
-|---------|------|---------|
-| | 1.0.0 | 2025-01 | Initial release with all core features |
-| | 1.1.0 | 2025-01 | Added export history with thumbnails |
-| | 1.2.0 | 2025-01 | Added favicon and repository metadata |
-| | 1.3.0 | 2026-02 | Code refactoring and improvements: Removed unused functions, fixed image loading race condition, added input validation, improved accessibility with ARIA labels and focus styles, added CSS variables, separated inline styles, added lazy loading, added CSP header |
+| 1.3.0 | 2026-02 | Code refactoring and improvements: Removed unused functions, fixed image loading race condition, added input validation, improved accessibility with ARIA labels and focus styles, added CSS variables, separated inline styles, added lazy loading, added CSP header |
+| 1.4.0 | 2026-02 | Auto-Detection Feature: Added pattern-based skill detection (2×5 grid), overlay buttons for skill selection, repeatable skill selection, updated UI flow - capture → auto-detect → click to select → export. Pattern settings: startX=347, startY=365, gapX=173, gapY=70, skillSize=70, rows=2, cols=5 |
 
 ## Current Status
 
@@ -98,8 +142,9 @@ Filename: `[ชื่อ]_จบY_70.png`
 
 ### What Works:
 - Screen capture from browser
-- Click-to-capture skills
-- Zoom controls
+- Auto-detection of 10 skills using pattern (2 rows × 5 columns)
+- Overlay buttons on captured image for skill selection
+- Repeatable skill selection (can click same skill multiple times)
 - Drag & drop reordering
 - Name input
 - Export with tier calculation
