@@ -273,7 +273,7 @@
         }
 
         .btn {
-            padding: 12px 30px;
+            padding: 12px 20px;
             border: none;
             border-radius: 25px;
             font-family: 'Kanit', sans-serif;
@@ -281,7 +281,6 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-transform: uppercase;
         }
 
         .btn-clear {
@@ -307,8 +306,6 @@
         .btn-primary {
             background: linear-gradient(145deg, #4ecdc4, #44a08d);
             color: white;
-            padding: 15px 40px;
-            font-size: 1.1em;
         }
 
         .btn-primary:hover {
@@ -357,7 +354,6 @@
         /* Focus styles for keyboard navigation */
         .btn:focus,
         .zoom-btn:focus,
-        .btn-history:focus,
         .header-screenshot-btn:focus,
         input:focus {
             outline: 3px solid #ffd700;
@@ -615,9 +611,11 @@
 
         .capture-controls {
             display: flex;
-            gap: 15px;
+            flex-wrap: wrap;
+            gap: 12px;
             justify-content: center;
-            margin-top: 20px;
+            align-items: center;
+            margin-top: 25px;
         }
 
         /* Responsive */
@@ -633,145 +631,26 @@
             h1 {
                 font-size: 1.8em;
             }
+
+            .capture-controls {
+                gap: 10px;
+            }
+
+            .capture-controls .btn {
+                font-size: 0.9em;
+                padding: 10px 15px;
+            }
         }
 
-        /* History Modal */
-        .history-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
+        @media (max-width: 480px) {
+            .capture-controls {
+                flex-direction: column;
+                width: 100%;
+            }
 
-        .history-content {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            border: 2px solid rgba(255, 200, 100, 0.3);
-        }
-
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid rgba(255, 200, 100, 0.3);
-            padding-bottom: 15px;
-        }
-
-        .history-header h2 {
-            color: #ffd700;
-            margin: 0;
-        }
-
-        .history-close {
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 1.5em;
-            cursor: pointer;
-            padding: 5px 10px;
-        }
-
-        .history-close:hover {
-            color: #ff6b6b;
-        }
-
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255,255, 255, 0.05);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid rgba(255, 200, 100, 0.2);
-            gap: 15px;
-        }
-
-        .history-item-preview {
-            width: 80px;
-            height: 80px;
-            flex-shrink: 0;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 2px solid rgba(255, 200, 100, 0.3);
-            background: rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-        }
-
-        .history-item-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .history-item-preview:hover {
-            border-color: #ffd700;
-        }
-
-        .history-item-preview.empty {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 0.8em;
-        }
-
-        .history-info {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .history-info strong {
-            color: #ffd700;
-            font-size: 1.1em;
-        }
-
-        .history-tier {
-            color: #64d2ff;
-            font-size: 0.9em;
-        }
-
-        .history-time {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.8em;
-        }
-
-        .history-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-history {
-            padding: 8px 15px;
-            background: linear-gradient(145deg, #4ecdc4, #44a08d);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-family: 'Kanit', sans-serif;
-            font-size: 0.9em;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .btn-history:hover {
-            transform: scale(1.05);
-        }
-
-        .btn-delete {
-            background: linear-gradient(145deg, #ff6b6b, #ee5a5a);
+            .capture-controls .btn {
+                width: 100%;
+            }
         }
 
         /* Preview Modal */
@@ -819,32 +698,6 @@
             justify-content: center;
             gap: 15px;
             margin-top: 20px;
-        }
-
-        /* History button on main page */
-        .btn-history-open {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            padding: 12px 25px;
-            border-radius: 50px;
-            background: linear-gradient(145deg, #a855f7, #7c3aed);
-            border: none;
-            color: white;
-            font-family: 'Kanit', sans-serif;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(168, 85, 247, 0.5);
-            transition: transform 0.3s;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-history-open:hover {
-            transform: scale(1.05);
         }
 
         /* Header with screenshot button */
@@ -970,29 +823,11 @@
                 </div>
 
                 <div class="capture-controls">
-                    <button class="btn btn-undo" id="undoCaptureBtn" onclick="undoLastCapture()" disabled aria-label="ยกเลิกสกิลล่าสุดที่เลือก">↩ ยกเลิกที่เลือก</button>
-                    <button class="btn btn-primary" id="previewBtn" onclick="previewImage()" disabled aria-label="ดูตัวอย่างก่อนดาวน์โหลด">👁️ ดูผลลัพธ์</button>
-                    <button class="btn btn-clear" onclick="clearSelected()" aria-label="ล้างสกิลทั้งหมดที่เลือก">🗑 ล้างทั้งหมด</button>
-                    <button class="btn btn-secondary" onclick="goToPlannerPage()" aria-label="กลับไปหน้าหลัก">✕ กลับหน้าหลัก</button>
+                    <button class="btn btn-undo" id="undoCaptureBtn" onclick="undoLastCapture()" disabled aria-label="ยกเลิกสกิลล่าสุดที่เลือก">↩ ยกเลิกสกิลล่าสุด</button>
+                    <button class="btn btn-primary" id="previewBtn" onclick="previewImage()" disabled aria-label="ดูตัวอย่างก่อนดาวน์โหลด">👁️ ดูตัวอย่างก่อนดาวน์โหลด</button>
+                    <button class="btn btn-clear" onclick="clearSelected()" aria-label="ล้างสกิลทั้งหมดที่เลือก">🗑 ล้างสกิลทั้งหมด</button>
+                    <button class="btn btn-secondary" onclick="goToPlannerPage()" aria-label="กลับไปหน้าแรก">✕ กลับหน้าแรก</button>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- History Button -->
-    <button class="btn-history-open" onclick="toggleHistory()" aria-label="ดูประวัติการ Export ที่บันทึกไว้" aria-expanded="false" aria-controls="historyModal">
-        📜 ประวัติการ Export
-    </button>
-
-    <!-- History Modal -->
-    <div class="history-modal" id="historyModal" role="dialog" aria-modal="true" aria-labelledby="historyTitle">
-        <div class="history-content">
-            <div class="history-header">
-                <h2 id="historyTitle">📜 ประวัติการ Export</h2>
-                <button class="history-close" onclick="toggleHistory()" aria-label="ปิดประวัติ">✕</button>
-            </div>
-            <div id="historyContainer">
-                <div class="empty-state">ยังไม่มีประวัติการ export</div>
             </div>
         </div>
     </div>
@@ -1569,120 +1404,13 @@
             link.download = filename;
             link.href = canvas.toDataURL("image/png");
             link.click();
-
-            // Save to history with sanitized name
-            saveToHistory(name, canvas.toDataURL("image/png"), usedTier);
-        }
-
-        // History Management (localStorage)
-        const HISTORY_KEY = "7k_skill_history";
-        const MAX_HISTORY = 20;
-
-        function getHistory() {
-            try {
-                const data = localStorage.getItem(HISTORY_KEY);
-                return data ? JSON.parse(data) : [];
-            } catch {
-                return [];
-            }
-        }
-
-        function saveToHistory(name, imageData, usedTier) {
-            const history = getHistory();
-            const sanitizedName = sanitizeInput(name || "ไม่ระบุชื่อ");
-            const record = {
-                id: Date.now(),
-                name: sanitizedName,
-                image: imageData,
-                usedTier: usedTier,
-                skillCount: selectedSkills.length,
-                timestamp: new Date().toLocaleString("th-TH")
-            };
-
-            // Add to beginning
-            history.unshift(record);
-
-            // Keep only MAX_HISTORY items
-            if (history.length > MAX_HISTORY) {
-                history.splice(MAX_HISTORY);
-            }
-
-            // Save back to localStorage (without image data to save space, keep only last 5 with images)
-            const historyToSave = history.map((item, index) => ({
-                ...item,
-                image: index < 5 ? item.image : null
-            }));
-            localStorage.setItem(HISTORY_KEY, JSON.stringify(historyToSave));
-
-            renderHistory();
-        }
-
-        function deleteFromHistory(id) {
-            if (confirm("ต้องการลบประวัตินี้ใช่หรือไม่?")) {
-                let history = getHistory();
-                history = history.filter(item => item.id !== id);
-                localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
-                renderHistory();
-            }
-        }
-
-        function renderHistory() {
-            const container = document.getElementById("historyContainer");
-            const history = getHistory();
-
-            if (history.length === 0) {
-                container.innerHTML = '<div class="empty-state">ยังไม่มีประวัติการ export</div>';
-                return;
-            }
-
-            container.innerHTML = "";
-
-            history.forEach((record) => {
-                const div = document.createElement("div");
-                div.className = "history-item";
-
-                // Preview thumbnail
-                const previewHtml = record.image
-                    ? `<div class="history-item-preview" onclick="openPreview(${record.id})" role="button" tabindex="0" aria-label="ดูตัวอย่าง ${record.name}"><img src="${record.image}" alt="ตัวอย่าง ${record.name}"></div>`
-                    : `<div class="history-item-preview empty">ไม่มีรูป</div>`;
-
-                div.innerHTML = `
-                    ${previewHtml}
-                    <div class="history-info">
-                        <strong></strong>
-                        <span class="history-tier">${record.skillCount} Skills - จบ ${record.usedTier}/70</span>
-                        <span class="history-time">${record.timestamp}</span>
-                    </div>
-                    <div class="history-actions">
-                        ${record.image ? `<button class="btn-history" onclick="downloadHistoryItem(${record.id})" aria-label="ดาวน์โหลด ${record.name}">📥 ดาวน์โหลด</button>` : '<span style="color:#aaa;font-size:0.8em;">รูปถูกลบแล้ว</span>'}
-                        <button class="btn-history btn-delete" onclick="deleteFromHistory(${record.id})" aria-label="ลบประวัติ ${record.name}">🗑</button>
-                    </div>
-                `;
-
-                // Set name text content safely (prevent XSS)
-                div.querySelector('.history-info strong').textContent = record.name;
-
-                container.appendChild(div);
-            });
         }
 
         // Preview functions
-        let currentPreviewRecord = null;
         let currentPreviewCanvas = null;
-
-        function openPreview(id) {
-            const history = getHistory();
-            const record = history.find(item => item.id === id);
-            if (record && record.image) {
-                currentPreviewRecord = record;
-                document.getElementById("previewImage").src = record.image;
-                document.getElementById("previewModal").style.display = "flex";
-            }
-        }
 
         function closePreview() {
             document.getElementById("previewModal").style.display = "none";
-            currentPreviewRecord = null;
             currentPreviewCanvas = null;
         }
 
@@ -1696,37 +1424,6 @@
                 link.download = filename;
                 link.href = currentPreviewCanvas.toDataURL("image/png");
                 link.click();
-            } else if (currentPreviewRecord && currentPreviewRecord.image) {
-                const link = document.createElement("a");
-                const sanitizedName = sanitizeInput(currentPreviewRecord.name);
-                link.download = `${sanitizedName}_จบ${currentPreviewRecord.usedTier}_70.png`;
-                link.href = currentPreviewRecord.image;
-                link.click();
-            }
-        }
-
-        function downloadHistoryItem(id) {
-            const history = getHistory();
-            const record = history.find(item => item.id === id);
-            if (record && record.image) {
-                const link = document.createElement("a");
-                const sanitizedName = sanitizeInput(record.name);
-                link.download = `${sanitizedName}_จบ${record.usedTier}_70.png`;
-                link.href = record.image;
-                link.click();
-            }
-        }
-
-        function toggleHistory() {
-            const modal = document.getElementById("historyModal");
-            const button = document.querySelector('.btn-history-open');
-            const isOpen = modal.style.display === "flex";
-
-            modal.style.display = isOpen ? "none" : "flex";
-            button.setAttribute('aria-expanded', !isOpen);
-
-            if (!isOpen) {
-                renderHistory();
             }
         }
 
@@ -1734,13 +1431,6 @@
         document.getElementById("previewModal").addEventListener("click", function(e) {
             if (e.target === this) {
                 closePreview();
-            }
-        });
-
-        // Close history on outside click
-        document.getElementById("historyModal").addEventListener("click", function(e) {
-            if (e.target === this) {
-                toggleHistory();
             }
         });
 

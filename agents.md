@@ -20,16 +20,13 @@
 5. **Repeat Selection** - Can click same skill multiple times
 6. **Tier Calculation** - Auto formula: `(skills - 1) × 4` with max 70
 7. **Export as PNG** - Formatted image with title, name, skills, and tier info
-8. **Local History** - Saves up to 20 records in localStorage (last 5 with images)
 
 ### UI/UX
 - Main page with usage instructions
 - Example images (Older Skill page, Export result)
 - Favicon (logo.png)
 - Credit: "สร้างโดย snowb4ll"
-- History button with clear Thai label
-- Image thumbnails in history list
-- Preview modal for full-size view
+- Preview modal for full-size view before download
 
 ### Export Format
 ```
@@ -60,20 +57,17 @@ Filename: `[ชื่อ]_จบY_70.png`
 - **Pure HTML/CSS/JavaScript** - No frameworks
 - **Canvas API** - Image cropping and export
 - **Screen Capture API** - Browser-based screen capture
-- **localStorage** - Client-side history storage
 - **Drag & Drop API** - Skill reordering
 
 ## Key Design Decisions
 
 1. **Standalone HTML** - Single file for easy use and sharing
-2. **Local storage only** - No server, privacy-focused
+2. **No storage** - No server or local storage, privacy-focused
 3. **Pattern-based Detection** - Grid-based auto-detection (2 rows × 5 columns) with fixed positions
 4. **Pattern Settings** - startX=347, startY=365, gapX=173, gapY=70, skillSize=70, rows=2, cols=5 (see Pattern Detection Settings section above)
 5. **Overlay UI** - Clickable buttons overlaid on captured image for skill selection
 6. **Repeatable Selection** - Users can click same skill multiple times to build their sequence
-7. **Max 20 history items** - Balances utility with storage limits
-8. **Only 5 images stored** - Older records keep metadata but images are purged
-9. **Thai language UI** - Target audience is Thai players
+7. **Thai language UI** - Target audience is Thai players
 
 ## Pattern Detection Settings
 
@@ -135,6 +129,7 @@ Skill 10: x=1033, y=433
 | 1.2.0 | 2025-01 | Added favicon and repository metadata |
 | 1.3.0 | 2026-02 | Code refactoring and improvements: Removed unused functions, fixed image loading race condition, added input validation, improved accessibility with ARIA labels and focus styles, added CSS variables, separated inline styles, added lazy loading, added CSP header |
 | 1.4.0 | 2026-02 | Auto-Detection Feature: Added pattern-based skill detection (2×5 grid), overlay buttons for skill selection, repeatable skill selection, updated UI flow - capture → auto-detect → click to select → export. Pattern settings: startX=347, startY=365, gapX=173, gapY=70, skillSize=70, rows=2, cols=5 |
+| 1.5.0 | 2026-02 | Removed export history feature - simplified app to focus on core skill planning functionality without local storage |
 
 ## Current Status
 
@@ -148,8 +143,7 @@ Skill 10: x=1033, y=433
 - Drag & drop reordering
 - Name input
 - Export with tier calculation
-- Local history with thumbnails
-- Preview modal
+- Preview modal before download
 - Responsive design
 
 ### Known Limitations:
