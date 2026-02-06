@@ -41,6 +41,8 @@ Filename: `[ชื่อ]_จบY_70.png`
 ```
 7k-autoskill/
 ├── index.html          # Main application (standalone HTML)
+├── manifest.json       # PWA manifest file
+├── sw.js               # Service Worker for PWA offline support
 ├── Example.png        # Example: Older Skill page to open
 ├── Finish.png          # Example: Export result preview
 ├── logo.png            # Favicon icon
@@ -58,6 +60,8 @@ Filename: `[ชื่อ]_จบY_70.png`
 - **Canvas API** - Image cropping and export
 - **Screen Capture API** - Browser-based screen capture
 - **Drag & Drop API** - Skill reordering
+- **PWA (Progressive Web App)** - Installable web app with offline support
+- **Service Worker** - Caching for offline functionality
 
 ## Key Design Decisions
 
@@ -68,6 +72,7 @@ Filename: `[ชื่อ]_จบY_70.png`
 5. **Overlay UI** - Clickable buttons overlaid on captured image for skill selection
 6. **Repeatable Selection** - Users can click same skill multiple times to build their sequence
 7. **Thai language UI** - Target audience is Thai players
+8. **PWA Support** - Installable as desktop/mobile app with offline capability
 
 ## Pattern Detection Settings
 
@@ -130,6 +135,7 @@ Skill 10: x=1033, y=433
 | 1.3.0 | 2026-02 | Code refactoring and improvements: Removed unused functions, fixed image loading race condition, added input validation, improved accessibility with ARIA labels and focus styles, added CSS variables, separated inline styles, added lazy loading, added CSP header |
 | 1.4.0 | 2026-02 | Auto-Detection Feature: Added pattern-based skill detection (2×5 grid), overlay buttons for skill selection, repeatable skill selection, updated UI flow - capture → auto-detect → click to select → export. Pattern settings: startX=347, startY=365, gapX=173, gapY=70, skillSize=70, rows=2, cols=5 |
 | 1.5.0 | 2026-02 | Removed export history feature - simplified app to focus on core skill planning functionality without local storage |
+| 1.6.0 | 2026-02 | Added PWA support: manifest.json, service worker, install prompt banner for Chrome/Edge, offline support |
 
 ## Current Status
 
@@ -145,6 +151,8 @@ Skill 10: x=1033, y=433
 - Export with tier calculation
 - Preview modal before download
 - Responsive design
+- PWA install prompt (Chrome/Edge)
+- Offline support via Service Worker
 
 ### Known Limitations:
 - Requires HTTPS or localhost for Screen Capture API

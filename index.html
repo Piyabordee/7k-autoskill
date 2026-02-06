@@ -4,13 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self'; 
-                   img-src 'self' data: https:; 
-                   script-src 'self' 'unsafe-inline'; 
-                   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
+          content="default-src 'self';
+                   img-src 'self' data: https:;
+                   script-src 'self' 'unsafe-inline';
+                   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
                    font-src 'self' https://fonts.gstatic.com;">
     <title>7K Skill Planner - Auto Detection</title>
     <link rel="icon" type="image/png" href="logo.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="7K Skill Planner">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
 
@@ -700,6 +705,119 @@
             margin-top: 20px;
         }
 
+        /* PWA Install Banner */
+        .pwa-install-banner {
+            position: fixed;
+            bottom: -100px;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-top: 2px solid rgba(255, 200, 100, 0.5);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            z-index: 2000;
+            transition: bottom 0.3s ease;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .pwa-install-banner.show {
+            bottom: 0;
+        }
+
+        .pwa-install-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .pwa-install-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: rgba(255, 200, 100, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .pwa-install-text {
+            flex: 1;
+        }
+
+        .pwa-install-title {
+            color: #ffd700;
+            font-weight: 600;
+            font-size: 1em;
+            margin-bottom: 3px;
+        }
+
+        .pwa-install-desc {
+            color: #aaa;
+            font-size: 0.85em;
+        }
+
+        .pwa-install-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-pwa-install {
+            padding: 10px 20px;
+            background: linear-gradient(145deg, #4ecdc4, #44a08d);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            font-family: 'Kanit', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-pwa-install:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-pwa-dismiss {
+            padding: 10px 15px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            color: #aaa;
+            font-family: 'Kanit', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-pwa-dismiss:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        @media (max-width: 480px) {
+            .pwa-install-banner {
+                flex-direction: column;
+                padding: 15px;
+            }
+
+            .pwa-install-actions {
+                width: 100%;
+                justify-content: stretch;
+            }
+
+            .btn-pwa-install,
+            .btn-pwa-dismiss {
+                flex: 1;
+            }
+        }
+
         /* Header with screenshot button */
         .page-header {
             display: flex;
@@ -829,6 +947,21 @@
                     <button class="btn btn-secondary" onclick="goToPlannerPage()" aria-label="กลับไปหน้าแรก">✕ กลับหน้าแรก</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- PWA Install Banner -->
+    <div class="pwa-install-banner" id="pwaInstallBanner">
+        <div class="pwa-install-info">
+            <div class="pwa-install-icon">⚔️</div>
+            <div class="pwa-install-text">
+                <div class="pwa-install-title">ติดตั้ง 7K Skill Planner</div>
+                <div class="pwa-install-desc">ติดตั้งแอปเพื่อใช้งานได้สะดวกยิ่งขึ้น</div>
+            </div>
+        </div>
+        <div class="pwa-install-actions">
+            <button class="btn-pwa-dismiss" onclick="dismissPWAInstall()" aria-label="ปิดการแจ้งเตือน">ไม่ใช่ตอนนี้</button>
+            <button class="btn-pwa-install" onclick="installPWA()" aria-label="ติดตั้งแอป">ติดตั้ง</button>
         </div>
     </div>
 
@@ -1433,6 +1566,80 @@
                 closePreview();
             }
         });
+
+        // ==================== PWA INSTALL PROMPT ====================
+        let deferredPrompt;
+        const pwaBanner = document.getElementById("pwaInstallBanner");
+        const PWA_DISMISSED_KEY = "pwa_install_dismissed";
+
+        // Check if user previously dismissed the install prompt
+        function wasPWADismissed() {
+            try {
+                return localStorage.getItem(PWA_DISMISSED_KEY) === "true";
+            } catch {
+                return false;
+            }
+        }
+
+        // Dismiss PWA install banner
+        function dismissPWAInstall() {
+            pwaBanner.classList.remove("show");
+            try {
+                localStorage.setItem(PWA_DISMISSED_KEY, "true");
+            } catch {
+                // Ignore storage errors
+            }
+        }
+
+        // Install PWA
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === "accepted") {
+                        console.log("PWA installation accepted");
+                    }
+                    deferredPrompt = null;
+                    pwaBanner.classList.remove("show");
+                });
+            }
+        }
+
+        // Listen for beforeinstallprompt event
+        window.addEventListener("beforeinstallprompt", (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+
+            // Show banner if not previously dismissed
+            if (!wasPWADismissed()) {
+                // Wait a bit before showing the banner
+                setTimeout(() => {
+                    pwaBanner.classList.add("show");
+                }, 3000);
+            }
+        });
+
+        // Listen for app installed event
+        window.addEventListener("appinstalled", () => {
+            // Hide the banner
+            pwaBanner.classList.remove("show");
+            deferredPrompt = null;
+        });
+
+        // Register Service Worker
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js")
+                    .then((registration) => {
+                        console.log("Service Worker registered: ", registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log("Service Worker registration failed: ", registrationError);
+                    });
+            });
+        }
 
         // Initialize on load
         // No initialization needed - app starts with planner page
