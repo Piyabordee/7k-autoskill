@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self';
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self';
                    img-src 'self' data: https:;
                    script-src 'self' 'unsafe-inline';
                    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
@@ -221,6 +221,7 @@
                 transform: scale(0);
                 opacity: 0;
             }
+
             to {
                 transform: scale(1);
                 opacity: 1;
@@ -438,18 +439,18 @@
             max-width: 100%;
             border-radius: var(--radius-md);
             border: 3px solid rgba(255, 200, 100, 0.5);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
 
         .credit-section {
             text-align: center;
             margin-top: 40px;
             padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .credit-section p {
-            color: rgba(255,255,255,0.5);
+            color: rgba(255, 255, 255, 0.5);
             font-size: 0.9em;
         }
 
@@ -859,6 +860,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="page-header">
@@ -871,17 +873,22 @@
                 <div class="usage-guide">
                     <h2>📋 ขั้นตอนการใช้งาน</h2>
                     <div class="usage-guide">
-                        <p>1. เปิดหน้า <strong class="highlight-gold">Older Skill</strong> ในเกม 7K ก่อน (ดูตัวอย่างด้านล่าง)</p>
+                        <p>1. เปิดหน้า <strong class="highlight-gold">Older Skill</strong> ในเกม 7K ก่อน
+                            (ดูตัวอย่างด้านล่าง)</p>
                         <p>2. กดปุ่ม <strong class="highlight-green">📸 จับภาพหน้าจอ - ตรวจจับอัตโนมัติ</strong></p>
-                        <p>3. เลือกหน้าต่างเกมที่เปิดไว้ - <strong class="highlight-green">ระบบจะตรวจจับสกิล 10 อันอัตโนมัติ</strong></p>
-                        <p>4. <strong class="highlight-green">คลิกที่สกิล</strong>ที่ตรวจจับได้เพื่อเพิ่มเข้าลำดับ - <strong class="highlight-green">สามารถคลิกซ้ำได้</strong></p>
+                        <p>3. เลือกหน้าต่างเกมที่เปิดไว้ - <strong class="highlight-green">ระบบจะตรวจจับสกิล 10
+                                อันอัตโนมัติ</strong></p>
+                        <p>4. <strong class="highlight-green">คลิกที่สกิล</strong>ที่ตรวจจับได้เพื่อเพิ่มเข้าลำดับ -
+                            <strong class="highlight-green">สามารถคลิกซ้ำได้</strong></p>
                         <p>5. ลากเรียงลำดับสกิลได้ตามต้องการ (คลิก X เพื่อลบ)</p>
-                        <p>6. กรอกชื่อตัวละคร แล้วกด <strong class="highlight-green">👁️ ดูผลลัพธ์</strong> เพื่อดูรูปก่อน ถ้าพอใจแล้วกด <strong class="highlight-purple">📥 ดาวน์โหลด</strong></p>
+                        <p>6. กรอกชื่อตัวละคร แล้วกด <strong class="highlight-green">👁️ ดูผลลัพธ์</strong>
+                            เพื่อดูรูปก่อน ถ้าพอใจแล้วกด <strong class="highlight-purple">📥 ดาวน์โหลด</strong></p>
                     </div>
                 </div>
 
                 <div class="action-section">
-                    <button class="header-screenshot-btn" onclick="goToCapturePage()" aria-label="จับภาพหน้าจอเพื่อตรวจจับสกิลอัตโนมัติ">
+                    <button class="header-screenshot-btn" onclick="goToCapturePage()"
+                        aria-label="จับภาพหน้าจอเพื่อตรวจจับสกิลอัตโนมัติ">
                         📸 จับภาพหน้าจอ - ตรวจจับอัตโนมัติ
                     </button>
                 </div>
@@ -931,8 +938,7 @@
                 <div style="text-align: center; margin-top: 20px;">
                     <label for="skillName" style="color: #ffd700; margin-right: 10px;">ชื่อ:</label>
                     <input type="text" id="skillName" placeholder="ระบุชื่อ เช่น น่องไก้, ไคล์, แทโอ"
-                           aria-label="ชื่อตัวละคร"
-                           style="padding: 10px 20px; border-radius: 10px; border: 2px solid rgba(255,200,100,0.5);
+                        aria-label="ชื่อตัวละคร" style="padding: 10px 20px; border-radius: 10px; border: 2px solid rgba(255,200,100,0.5);
                            background: rgba(255,255,255,0.1); color: #fff; font-size: 1em; width: 250px;">
                 </div>
 
@@ -941,10 +947,14 @@
                 </div>
 
                 <div class="capture-controls">
-                    <button class="btn btn-undo" id="undoCaptureBtn" onclick="undoLastCapture()" disabled aria-label="ยกเลิกสกิลล่าสุดที่เลือก">↩ ยกเลิกสกิลล่าสุด</button>
-                    <button class="btn btn-primary" id="previewBtn" onclick="previewImage()" disabled aria-label="ดูตัวอย่างก่อนดาวน์โหลด">👁️ ดูตัวอย่างก่อนดาวน์โหลด</button>
-                    <button class="btn btn-clear" onclick="clearSelected()" aria-label="ล้างสกิลทั้งหมดที่เลือก">🗑 ล้างสกิลทั้งหมด</button>
-                    <button class="btn btn-secondary" onclick="goToPlannerPage()" aria-label="กลับไปหน้าแรก">✕ กลับหน้าแรก</button>
+                    <button class="btn btn-undo" id="undoCaptureBtn" onclick="undoLastCapture()" disabled
+                        aria-label="ยกเลิกสกิลล่าสุดที่เลือก">↩ ยกเลิกสกิลล่าสุด</button>
+                    <button class="btn btn-primary" id="previewBtn" onclick="previewImage()" disabled
+                        aria-label="ดูตัวอย่างก่อนดาวน์โหลด">👁️ ดูตัวอย่างก่อนดาวน์โหลด</button>
+                    <button class="btn btn-clear" onclick="clearSelected()" aria-label="ล้างสกิลทั้งหมดที่เลือก">🗑
+                        ล้างสกิลทั้งหมด</button>
+                    <button class="btn btn-secondary" onclick="goToPlannerPage()" aria-label="กลับไปหน้าแรก">✕
+                        กลับหน้าแรก</button>
                 </div>
             </div>
         </div>
@@ -960,7 +970,8 @@
             </div>
         </div>
         <div class="pwa-install-actions">
-            <button class="btn-pwa-dismiss" onclick="dismissPWAInstall()" aria-label="ปิดการแจ้งเตือน">ไม่ใช่ตอนนี้</button>
+            <button class="btn-pwa-dismiss" onclick="dismissPWAInstall()"
+                aria-label="ปิดการแจ้งเตือน">ไม่ใช่ตอนนี้</button>
             <button class="btn-pwa-install" onclick="installPWA()" aria-label="ติดตั้งแอป">ติดตั้ง</button>
         </div>
     </div>
@@ -972,7 +983,8 @@
             <button class="preview-close" onclick="closePreview()" aria-label="ปิดตัวอย่าง">✕</button>
             <img id="previewImage" src="" alt="ตัวอย่างผลลัพธ์">
             <div class="preview-actions">
-                <button class="btn btn-primary" onclick="downloadPreview()" aria-label="ดาวน์โหลดรูปภาพ">📥 ดาวน์โหลด</button>
+                <button class="btn btn-primary" onclick="downloadPreview()" aria-label="ดาวน์โหลดรูปภาพ">📥
+                    ดาวน์โหลด</button>
                 <button class="btn btn-secondary" onclick="closePreview()" aria-label="ปิดตัวอย่าง">ปิด</button>
             </div>
         </div>
@@ -1063,8 +1075,8 @@
                     // Draw the cropped region (centered on the position)
                     cropCtx.drawImage(
                         captureImage.canvas,
-                        Math.max(0, x - skillSize/2),
-                        Math.max(0, y - skillSize/2),
+                        Math.max(0, x - skillSize / 2),
+                        Math.max(0, y - skillSize / 2),
                         skillSize, skillSize,
                         0, 0, 60, 60
                     );
@@ -1260,7 +1272,7 @@
 
             // Redraw image
             newCtx.drawImage(captureImage.canvas, 0, 0, captureImage.naturalWidth, captureImage.naturalHeight,
-                           0, 0, newCanvas.width, newCanvas.height);
+                0, 0, newCanvas.width, newCanvas.height);
 
             // Click functionality disabled - using overlay buttons instead
             // Canvas is now just for visual reference
@@ -1561,7 +1573,7 @@
         }
 
         // Close preview on outside click
-        document.getElementById("previewModal").addEventListener("click", function(e) {
+        document.getElementById("previewModal").addEventListener("click", function (e) {
             if (e.target === this) {
                 closePreview();
             }
@@ -1645,4 +1657,5 @@
         // No initialization needed - app starts with planner page
     </script>
 </body>
+
 </html>
