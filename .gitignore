@@ -9,6 +9,7 @@ playwright/.cache/
 
 # IDE & Editor
 .vscode/
+.github/
 .idea/
 *.swp
 *.swo
