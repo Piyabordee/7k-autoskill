@@ -3,39 +3,12 @@
   "version": "1.3.0",
   "description": "7K Skill Planner - Auto Detection",
   "main": "index.html",
-  "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:headed": "playwright test --headed"
-  },
+  "scripts": {},
   "keywords": [
     "7k",
     "skill",
     "planner"
   ],
   "author": "snowb4ll",
-  "license": "MIT",
-  "devDependencies": {
-    "@jest/globals": "^30.2.0",
-    "@playwright/test": "^1.58.2",
-    "jest": "^30.2.0",
-    "jest-environment-jsdom": "^30.2.0",
-    "jsdom": "^28.0.0",
-    "playwright": "^1.58.2"
-  },
-  "jest": {
-    "testEnvironment": "jsdom",
-    "testMatch": [
-      "**/tests/**/*.test.js"
-    ],
-    "collectCoverageFrom": [
-      "**/*.js",
-      "!node_modules/**",
-      "!tests/**",
-      "!.venv/**"
-    ]
-  }
+  "license": "MIT"
 }
