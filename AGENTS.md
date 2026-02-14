@@ -4,7 +4,7 @@
 
 Standalone browser-based tool for Seven Knights (7K) players to plan and share skill builds. Built with pure HTML/CSS/JavaScript - no frameworks, no build step, no dependencies.
 
-**Target:** Thai players who capture game screenshots, auto-detect skills, select/reorder, and export as PNG with tier calculation.
+**Target:** Thai players who capture game screenshots, auto-detect skills, select/reorder, and export as PNG or copy to clipboard with tier calculation.
 
 ## Build/Test/Lint Commands
 
@@ -105,12 +105,13 @@ Formula: `(skill_count - 1) * 4` with max 70. This is game mechanics, not config
 
 **Live Demo:** https://7k-autoskill.vercel.app/
 
-**Current Status:** Production Ready (v1.6.0, Feb 2026) - PWA with offline support
+**Current Status:** Production Ready (v1.6.1, Feb 2026) - PWA with offline support, clipboard copy feature
 
 **Known Limitations:** Requires HTTPS/localhost; Safari has partial support; mobile browsers limited for screen capture
 
 ## Version History
 
+| v1.6.1 | Feb 2026 | Copy to clipboard feature - copy image directly to clipboard for easy sharing |
 | v1.6.0 | Feb 2026 | PWA support (manifest, service worker, install prompt) |
 | v1.5.0 | Feb 2026 | Removed export history - simplified app |
 | v1.4.0 | Feb 2026 | Auto-detection (2×5 grid), overlay buttons, repeatable selection |

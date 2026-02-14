@@ -6,7 +6,7 @@
 
 
 
-![Version](https://img.shields.io/badge/version-1.6.0-blue)
+![Version](https://img.shields.io/badge/version-1.6.1-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
@@ -43,6 +43,7 @@ Drag to reorder skills, enter your name, and export as a formatted PNG image wit
 - **Drag & Drop Reordering** - Easily rearrange captured skills via drag and drop
 - **Tier Calculation** - Automatically calculates skill progression: `(skills - 1) × 4` (max 70)
 - **Export as Image** - Download your skill plan as formatted PNG: `[name]_จบ[tier]_70.png`
+- **Copy to Clipboard** - Copy image directly to clipboard for easy sharing to Discord/social media
 - **PWA Support** - Install as an app, works offline with service worker caching
 - **Standalone** - Single HTML file, no server or installation required
 - **Privacy Focused** - All processing happens locally in your browser
@@ -57,7 +58,8 @@ Drag to reorder skills, enter your name, and export as a formatted PNG image wit
 4. **Click on each skill** you want to add to your build
 5. Drag skills to **reorder** as needed
 6. Enter your **character name**
-7. Click **📥 ดาวน์โหลด** to download your skill plan
+7. Click **👁️ ดูตัวอย่างก่อนดาวน์โหลด** to preview
+8. Click **📥 ดาวน์โหลด** to download or **📋 คัดลอก** to copy to clipboard
 
 ### Offline
 
@@ -89,6 +91,7 @@ Export filename: `น่องไก้_จบ36_70.png`
 | 1.4.0 | 2026-02 | Auto-detection (2×5 grid), overlay buttons, repeatable selection |
 | 1.5.0 | 2026-02 | Removed export history - simplified app |
 | 1.6.0 | 2026-02 | PWA support (manifest, service worker, install prompt) |
+| 1.6.1 | 2026-02 | Copy to clipboard feature - copy image directly for easy sharing |
 
 ## Browser Support
 

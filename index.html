@@ -340,6 +340,16 @@
             box-shadow: 0 5px 20px rgba(168, 85, 247, 0.4);
         }
 
+        .btn-copy {
+            background: linear-gradient(145deg, #64d2ff, #4a9fc7);
+            color: white;
+        }
+
+        .btn-copy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(100, 210, 255, 0.4);
+        }
+
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -412,6 +422,10 @@
 
         .usage-guide .highlight-purple {
             color: var(--color-purple);
+        }
+
+        .usage-guide .highlight-blue {
+            color: var(--color-blue);
         }
 
         .action-section {
@@ -882,7 +896,8 @@
                             <strong class="highlight-green">สามารถคลิกซ้ำได้</strong></p>
                         <p>5. ลากเรียงลำดับสกิลได้ตามต้องการ (คลิก X เพื่อลบ)</p>
                         <p>6. กรอกชื่อตัวละคร แล้วกด <strong class="highlight-green">👁️ ดูผลลัพธ์</strong>
-                            เพื่อดูรูปก่อน ถ้าพอใจแล้วกด <strong class="highlight-purple">📥 ดาวน์โหลด</strong></p>
+                            เพื่อดูรูปก่อน ถ้าพอใจแล้วกด <strong class="highlight-blue">📋 คัดลอก</strong>
+                            หรือ <strong class="highlight-purple">📥 ดาวน์โหลด</strong></p>
                     </div>
                 </div>
 
@@ -985,6 +1000,8 @@
             <div class="preview-actions">
                 <button class="btn btn-primary" onclick="downloadPreview()" aria-label="ดาวน์โหลดรูปภาพ">📥
                     ดาวน์โหลด</button>
+                <button class="btn btn-copy" onclick="copyPreview()" id="copyPreviewBtn" aria-label="คัดลอกรูปภาพ">📋
+                    คัดลอก</button>
                 <button class="btn btn-secondary" onclick="closePreview()" aria-label="ปิดตัวอย่าง">ปิด</button>
             </div>
         </div>
@@ -1569,6 +1586,35 @@
                 link.download = filename;
                 link.href = currentPreviewCanvas.toDataURL("image/png");
                 link.click();
+            }
+        }
+
+        async function copyPreview() {
+            if (!currentPreviewCanvas) return;
+
+            const btn = document.getElementById("copyPreviewBtn");
+            const originalText = btn.innerHTML;
+
+            try {
+                // Convert canvas to blob
+                const blob = await new Promise((resolve) => {
+                    currentPreviewCanvas.toBlob(resolve, "image/png");
+                });
+
+                // Copy to clipboard using Clipboard API
+                await navigator.clipboard.write([
+                    new ClipboardItem({ "image/png": blob })
+                ]);
+
+                // Show success feedback
+                btn.innerHTML = "✅ คัดลอกแล้ว";
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 2000);
+
+            } catch (err) {
+                console.error("Failed to copy image:", err);
+                alert("ไม่สามารถคัดลอกรูปภาพได้: " + err.message);
             }
         }
 
