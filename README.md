@@ -2,6 +2,10 @@
 
 <div align="center">
 
+<img src="logo.png" alt="7K Skill Planner Logo" width="80">
+
+
+
 ![Version](https://img.shields.io/badge/version-1.6.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
@@ -18,6 +22,18 @@
 ## Overview
 
 7K Skill Planner is a browser-based tool designed to help Seven Knights players plan and visualize their skill builds. Targeted at Thai players who capture game screenshots, auto-detect skills, select/reorder, and export as PNG with tier calculation.
+
+## Screenshots
+
+### Auto-Detection
+Capture your game screen and the app automatically detects skills in a 2×5 grid pattern with overlay buttons.
+
+<img src="Example.png" alt="Game Screen with Auto-Detection" width="600">
+
+### Export Result
+Drag to reorder skills, enter your name, and export as a formatted PNG image with tier calculation.
+
+<img src="Finish.png" alt="Export Result Example" width="400">
 
 ## Features
 
