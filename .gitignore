@@ -1,6 +1,9 @@
 # Dependencies
 node_modules/
 
+# Python
+.venv/
+
 # Test coverage & results
 coverage/
 test-results/
@@ -47,5 +50,6 @@ build/
 # Vercel
 .vercel/
 
-# Claude
-.claude/
+# Claude - ignore local settings, but track rules
+.claude/*
+!.claude/rules/
