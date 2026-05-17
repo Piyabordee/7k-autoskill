@@ -123,6 +123,7 @@ git commit -m "feat: add compression utilities with pako"
 ```typescript
 import type { Skill } from './types';
 import { compress, decompress, toBase64, fromBase64 } from './compression';
+import { sanitizeInput } from './utils';
 
 export interface BuildShare {
   n: string;      // character name (sanitized)
@@ -139,16 +140,16 @@ const HASH_PREFIX = '7kb:'; // prefix for URL validation
  */
 export function encodeBuild(name: string, skills: Skill[]): string {
   const data: BuildShare = {
-    n: name.trim().slice(0, 50), // sanitize and limit length
-    s: skills.map(s => s.image), // already base64 data URLs
+    n: sanitizeInput(name.trim().slice(0, 50)), // sanitize and limit length
+    s: skills.map((s) => s.image), // already base64 data URLs
     t: Date.now(),
     v: CURRENT_VERSION,
   };
-  
+
   const json = JSON.stringify(data);
   const compressed = compress(json);
   const base64 = toBase64(compressed);
-  
+
   return HASH_PREFIX + base64;
 }
 
@@ -162,19 +163,21 @@ export function decodeBuild(hash: string): BuildShare | null {
       console.error('Invalid hash prefix');
       return null;
     }
-    
+
     // Remove prefix and decode
     const base64 = hash.slice(HASH_PREFIX.length);
     const compressed = fromBase64(base64);
     const json = decompress(compressed);
     const data = JSON.parse(json) as BuildShare;
-    
+
     // Validate structure
     if (!data.n || !Array.isArray(data.s) || typeof data.t !== 'number') {
       console.error('Invalid build data structure');
       return null;
     }
-    
+
+    data.n = sanitizeInput(data.n);
+
     return data;
   } catch (error) {
     console.error('Failed to decode build:', error);
@@ -189,7 +192,7 @@ export function isValidHash(hash: string): boolean {
   if (!hash || typeof hash !== 'string') return false;
   if (!hash.startsWith(HASH_PREFIX)) return false;
   if (hash.length < HASH_PREFIX.length + 10) return false; // minimum size check
-  
+
   try {
     const base64 = hash.slice(HASH_PREFIX.length);
     fromBase64(base64); // will throw if invalid base64
@@ -219,7 +222,37 @@ git commit -m "feat: add sharing utilities for encode/decode"
 
 ---
 
-## Chunk 3: API Routes
+## Chunk 3: Short Link Storage + Routes
+
+### Task 3.0: Create shared KV store helper
+
+**Files:**
+- Create: `lib/shortlinks.ts`
+
+- [ ] **Step 1: Add KV helper with TTL**
+
+```typescript
+import { kv } from '@vercel/kv';
+
+const KEY_PREFIX = 'share:';
+const TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
+
+export async function storeHash(id: string, hash: string): Promise<void> {
+  await kv.set(`${KEY_PREFIX}${id}`, hash, { ex: TTL_SECONDS });
+}
+
+export async function getHash(id: string): Promise<string | null> {
+  return kv.get<string>(`${KEY_PREFIX}${id}`);
+}
+```
+
+- [ ] **Step 2: Add KV dependency**
+
+```bash
+npm install @vercel/kv
+```
+
+---
 
 ### Task 3.1: Create shorten API route
 
@@ -231,44 +264,35 @@ git commit -m "feat: add sharing utilities for encode/decode"
 ```typescript
 import { NextRequest, NextResponse } from 'next/server';
 import { nanoid } from 'nanoid';
-
-// Note: Vercel KV requires setup in Vercel dashboard
-// For now, use in-memory storage for development
-// In production, replace with actual KV calls
-
-const store = new Map<string, { hash: string; expiresAt: Date }>();
+import { storeHash } from '@/lib/shortlinks';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { hash } = body;
-    
+
     if (!hash || typeof hash !== 'string') {
       return NextResponse.json(
         { error: 'Invalid hash format' },
         { status: 400 }
       );
     }
-    
+
     // Generate short ID (10 characters)
     const shortId = nanoid(10);
-    
-    // Calculate expiry (30 days from now)
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 30);
-    
-    // Store in memory (replace with Vercel KV in production)
-    store.set(shortId, { hash, expiresAt });
-    
+
+    await storeHash(shortId, hash);
+
     // Get base URL from request
     const baseUrl = request.nextUrl.origin;
-    
-    return NextResponse.json({
-      shortId,
-      shortUrl: `${baseUrl}/s/${shortId}`,
-      expiresAt: expiresAt.toISOString(),
-    }, { status: 201 });
-    
+
+    return NextResponse.json(
+      {
+        shortId,
+        shortUrl: `${baseUrl}/s/${shortId}`,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Shorten error:', error);
     return NextResponse.json(
@@ -294,134 +318,37 @@ git commit -m "feat: add /api/shorten endpoint for short URLs"
 
 ---
 
-### Task 3.2: Create redirect API route
+### Task 3.2: Create short URL redirect page
 
 **Files:**
-- Create: `app/api/[id]/route.ts`
+- Create: `app/s/[id]/page.tsx`
 
-- [ ] **Step 1: Write redirect endpoint**
+- [ ] **Step 1: Create short URL redirect page (KV-backed)**
 
 ```typescript
-import { NextRequest, NextResponse } from 'next/server';
+import { redirect } from 'next/navigation';
+import { getHash } from '@/lib/shortlinks';
 
-// Import the same store from shorten route
-// In production, this would use Vercel KV
-const store = new Map<string, { hash: string; expiresAt: Date }>();
+export default async function ShortUrlPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const hash = await getHash(params.id);
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
-  
-  // Look up short ID in store
-  // Note: In production, replace with Vercel KV lookup
-  const entry = store.get(id);
-  
-  if (!entry) {
-    return NextResponse.json(
-      { error: 'Build not found or expired' },
-      { status: 404 }
-    );
+  if (!hash) {
+    redirect('/planner?error=not_found');
   }
-  
-  // Check if expired
-  if (new Date() > entry.expiresAt) {
-    store.delete(id);
-    return NextResponse.json(
-      { error: 'Build not found or expired' },
-      { status: 404 }
-    );
-  }
-  
-  // Redirect to planner with hash
-  return NextResponse.redirect(
-    new URL(`/planner#${entry.hash}`, request.url),
-    302
-  );
+
+  redirect(`/planner#${hash}`);
 }
 ```
 
 - [ ] **Step 2: Commit**
 
 ```bash
-git add app/api/[id]/route.ts
-git commit -m "feat: add /api/[id] redirect endpoint"
-```
-
----
-
-### Task 3.3: Add short URL redirect page
-
-**Files:**
-- Create: `app/s/[id]/page.tsx`
-
-- [ ] **Step 1: Create short URL redirect page**
-
-```typescript
-import { redirect } from 'next/navigation';
-
-// This page handles /s/abc123 URLs
-// The actual redirect happens in middleware for better performance
-
-export default async function ShortUrlPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  redirect(`/planner?shared=${id}`);
-}
-```
-
-- [ ] **Step 2: Create middleware for redirect**
-
-**Files:**
-- Create: `middleware.ts`
-
-```typescript
-import { NextRequest, NextResponse } from 'next/server';
-
-// In-memory store (same as API routes)
-// In production, use Vercel KV
-const store = new Map<string, { hash: string; expiresAt: Date }>();
-
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  
-  // Handle /s/{id} paths
-  const shortMatch = pathname.match(/^\/s\/([a-zA-Z0-9_-]+)$/);
-  if (shortMatch) {
-    const id = shortMatch[1];
-    const entry = store.get(id);
-    
-    if (entry && new Date() <= entry.expiresAt) {
-      return NextResponse.redirect(
-        new URL(`/planner#${entry.hash}`, request.url),
-        302
-      );
-    }
-    
-    // Return 404 page
-    return NextResponse.redirect(
-      new URL('/planner?error=not_found', request.url),
-      302
-    );
-  }
-  
-  return NextResponse.next();
-}
-
-export const config = {
-  matcher: ['/s/:id*'],
-};
-```
-
-- [ ] **Step 3: Commit**
-
-```bash
-git add app/s/[id]/page.tsx middleware.ts
-git commit -m "feat: add short URL redirect page and middleware"
+git add app/s/[id]/page.tsx lib/shortlinks.ts package.json package-lock.json
+git commit -m "feat: add KV-backed short link storage and redirect"
 ```
 
 ---
@@ -461,7 +388,7 @@ export function ShareButton({ characterName, skills, className = '' }: ShareButt
   const handleCopyFullUrl = async () => {
     const hash = encodeBuild(characterName, skills);
     const fullUrl = `${window.location.origin}/planner#${hash}`;
-    
+
     try {
       await navigator.clipboard.writeText(fullUrl);
       showToast('คัดลอก URL แล้ว!');
@@ -479,20 +406,20 @@ export function ShareButton({ characterName, skills, className = '' }: ShareButt
     }
 
     setIsLoading(true);
-    
+
     try {
       const hash = encodeBuild(characterName, skills);
-      
+
       const response = await fetch('/api/shorten', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ hash }),
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to create short URL');
       }
-      
+
       const { shortUrl } = await response.json();
       await navigator.clipboard.writeText(shortUrl);
       showToast('คัดลอก Short Link แล้ว!');
@@ -514,7 +441,9 @@ export function ShareButton({ characterName, skills, className = '' }: ShareButt
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`px-6 py-3 bg-[#ffd700] text-[#1a1a2e] font-bold rounded-lg
-                   hover:bg-[#ffea00] transition-colors ${className}`}
+                   hover:bg-[#ffea00] transition-colors
+                   focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+                   focus-visible:outline-[#ffd700] ${className}`}
         aria-label="แชร์ Build"
       >
         📤 แชร์ Build
@@ -526,7 +455,9 @@ export function ShareButton({ characterName, skills, className = '' }: ShareButt
           <button
             onClick={handleCopyFullUrl}
             className="w-full px-4 py-3 text-left text-white hover:bg-[#0f3460] 
-                     transition-colors first:rounded-t-lg last:rounded-b-lg"
+                     transition-colors first:rounded-t-lg last:rounded-b-lg
+                     focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+                     focus-visible:outline-[#4ecdc4]"
           >
             🔗 คัดลอก URL
           </button>
@@ -535,7 +466,9 @@ export function ShareButton({ characterName, skills, className = '' }: ShareButt
             disabled={isLoading}
             className="w-full px-4 py-3 text-left text-white hover:bg-[#0f3460] 
                      transition-colors first:rounded-t-lg last:rounded-b-lg
-                     disabled:opacity-50 disabled:cursor-not-allowed"
+                     disabled:opacity-50 disabled:cursor-not-allowed
+                     focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+                     focus-visible:outline-[#4ecdc4]"
           >
             {isLoading ? '⏳ กำลังสร้าง...' : '✂️ สร้าง Short Link'}
           </button>
@@ -604,19 +537,26 @@ export default function PlannerPage() {
   } | null>(null);
 
   useEffect(() => {
+    const url = new URL(window.location.href);
+    const error = url.searchParams.get('error');
+
+    if (error === 'not_found') {
+      setLoadError('ไม่พบ build หรือหมดอายุ');
+    }
+
     // Check for shared build in URL hash
     const hash = getHashFromUrl();
-    
+
     if (hash && isValidHash(hash)) {
       const build = decodeBuild(hash);
-      
+
       if (build) {
         const skills: Skill[] = build.s.map((image, index) => ({
           id: Date.now() + index,
           image,
           name: `สกิล ${index + 1}`,
         }));
-        
+
         setInitialState({
           characterName: build.n,
           skills,
@@ -627,11 +567,11 @@ export default function PlannerPage() {
     } else if (hash) {
       setLoadError('โหลด build ไม่สำเร็จ: URL ไม่ถูกต้อง');
     }
-    
+
     setIsLoading(false);
-    
-    // Clear hash from URL after loading (for cleaner share)
-    if (hash) {
+
+    // Clear hash/query from URL after loading (for cleaner share)
+    if (hash || error) {
       window.history.replaceState(null, '', window.location.pathname);
     }
   }, []);
@@ -644,19 +584,25 @@ export default function PlannerPage() {
     );
   }
 
-  return (
-    <SkillPlanner 
-      initialState={initialState}
-      loadError={loadError}
-    />
-  );
+  return <SkillPlanner initialState={initialState} loadError={loadError} />;
 }
 ```
 
-- [ ] **Step 2: Update SkillPlanner to accept initialState**
+- [ ] **Step 2: Commit**
+
+```bash
+git add app/planner/page.tsx
+git commit -m "feat: add shared build loading on page mount"
+```
+
+---
+
+### Task 5.2: Update SkillPlanner to hydrate from shared state
 
 **Files:**
 - Modify: `components/planner/SkillPlanner.tsx`
+
+- [ ] **Step 1: Accept shared initialState and loadError**
 
 ```typescript
 interface SkillPlannerProps {
@@ -677,6 +623,13 @@ export function SkillPlanner({ initialState, loadError }: SkillPlannerProps) {
     zoom: 1,
   });
 
+  // When initialState arrives after mount, hydrate via reducer
+  useEffect(() => {
+    if (initialState) {
+      dispatch({ type: 'hydrateFromShare', payload: initialState });
+    }
+  }, [initialState]);
+
   // Show load error toast
   useEffect(() => {
     if (loadError) {
@@ -688,11 +641,27 @@ export function SkillPlanner({ initialState, loadError }: SkillPlannerProps) {
 }
 ```
 
+- [ ] **Step 2: Add reducer action to hydrate state**
+
+```typescript
+type Action =
+  | { type: 'hydrateFromShare'; payload: { characterName: string; skills: Skill[] } }
+  | ...;
+
+case 'hydrateFromShare':
+  return {
+    ...state,
+    capturedImage: null,
+    selectedSkills: action.payload.skills,
+    characterName: action.payload.characterName,
+  };
+```
+
 - [ ] **Step 3: Commit**
 
 ```bash
-git add app/planner/page.tsx components/planner/SkillPlanner.tsx
-git commit -m "feat: add shared build loading on page mount"
+git add components/planner/SkillPlanner.tsx
+git commit -m "feat: hydrate planner from shared build"
 ```
 
 ---
@@ -732,7 +701,7 @@ git commit -m "feat: complete Phase 2 shareable build links"
 - [ ] Encode decode roundtrip (name + 10 skills)
 - [ ] Copy full URL works
 - [ ] Short URL API creates valid short ID
-- [ ] Short URL redirect works (middleware)
+- [ ] Short URL redirect works
 - [ ] Invalid hash shows error toast
 - [ ] Expired short URL shows "not found"
 - [ ] Works on mobile (share intent)
