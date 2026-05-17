@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
 
 export async function GET(request: NextRequest) {
   try {
+    // Dynamically import kv to see the actual error
+    const { kv } = await import('@vercel/kv');
+
     // Test storing a value
     const testKey = 'test:ping';
     const testValue = `pong-${Date.now()}`;
 
-    await kv.set(testKey, testValue, { ex: 60 }); // expire in 60 seconds
+    await kv.set(testKey, testValue, { ex: 60 });
     const retrieved = await kv.get(testKey);
 
     return NextResponse.json({
@@ -24,6 +26,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       status: 'error',
       error: error instanceof Error ? error.message : 'Unknown error',
+      name: error instanceof Error ? error.name : null,
       stack: error instanceof Error ? error.stack : null
     }, { status: 500 });
   }
