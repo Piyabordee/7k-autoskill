@@ -1,26 +1,59 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Custom colors from original design */
+  --color-7k-bg: #1a1a2e;
+  --color-7k-surface: #16213e;
+  --color-7k-light: #0f3460;
+  --color-7k-gold: #ffd700;
+  --color-7k-blue: #64d2ff;
+  --color-7k-green: #4ecdc4;
+  --color-7k-purple: #a855f7;
+  --color-7k-red: #e74c3c;
+  --color-7k-gray: #666;
+  --color-7k-dark-gray: #aaa;
+
+  /* Custom fonts */
+  --font-thai: "Kanit", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
+  /* Custom spacing */
+  --spacing-xs: 5px;
+  --spacing-sm: 10px;
+  --spacing-md: 15px;
+  --spacing-lg: 20px;
+  --spacing-xl: 30px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Custom styles that Tailwind doesn't cover */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-thai);
+}
+
+/* Gradient background */
+.gradient-bg {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+/* Focus visible styles */
+*:focus-visible {
+  outline: 3px solid var(--color-7k-gold);
+  outline-offset: 2px;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-7k-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-7k-light);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-7k-gold);
 }
