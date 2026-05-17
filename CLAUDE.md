@@ -12,16 +12,16 @@
 |-------|-------|
 | Name | 7K Skill Planner |
 | Type | Standalone browser-based tool (PWA) |
-| Stack | Vanilla HTML, CSS, JavaScript (no frameworks) |
-| Version | 1.6.1 |
+| Stack | Next.js 15, Tailwind CSS 4, TypeScript |
+| Version | 2.0.0 (Phase 1 migration complete) |
 | Live | https://7k-autoskill.vercel.app/ |
 
 ---
 
 ## Read First
 
-- `.claude/rules/stable-rules.md` — project principles (standalone, privacy, Thai UI, pattern coords)
-- `.claude/rules/coding-style-rules.md` — JS/CSS/HTML/SW code conventions
+- `.claude/rules/stable-rules.md` — project principles (Next.js, privacy, Thai UI, pattern coords)
+- `.claude/rules/coding-style-rules.md` — TypeScript + Tailwind code conventions
 - `.claude/rules/security-rules.md` — XSS prevention, CSP, sanitization rules
 - `docs/_index.md` [[docs/_index]] — full documentation map
 
@@ -49,6 +49,25 @@
 │   ├── coding-style-rules.md
 │   └── security-rules.md
 └── settings.local.json
+app/
+├── layout.tsx
+├── page.tsx
+├── globals.css
+└── planner/
+    └── page.tsx
+components/
+└── planner/
+    ├── SkillPlanner.tsx
+    ├── ScreenCapture.tsx
+    ├── CaptureCanvas.tsx
+    ├── SkillSelection.tsx
+    ├── ExportPreview.tsx
+    ├── NameInput.tsx
+    └── index.ts
+lib/
+├── constants.ts
+├── types.ts
+└── utils.ts
 docs/
 ├── _index.md
 ├── architecture/
@@ -66,10 +85,6 @@ docs/
 │   └── constants.md
 └── testing/
     └── manual-testing.md
-index.html              # Main application (monolithic)
-js/utils.js             # Extracted pure functions for testing
-sw.js                   # Service worker (cache-first)
-manifest.json           # PWA manifest
 decisions.md            # Design decisions log
 README.md               # User-facing docs
 ```
@@ -79,8 +94,14 @@ README.md               # User-facing docs
 ## Quick Commands
 
 ```bash
-# Serve locally (required for Screen Capture API)
-python -m http.server 8000
+# Run dev server
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
 
 # Deploy to production (auto-deploys on push)
 git add -A && git commit -m "message" && git push
@@ -90,12 +111,12 @@ git add -A && git commit -m "message" && git push
 
 ## Working Rules
 
-1. **No frameworks or build steps** — changes must work by opening `index.html` in a browser
+1. **Next.js App Router** — Use Next.js 15 App Router conventions, server/client component separation
 2. **Pattern coordinates are sacred** — `PATTERN_SETTINGS` values are game-measured, not theoretical
-3. **Keep `js/utils.js` in sync** — pure functions duplicated from inline JS must match
-4. **Thai UI strings only** — user-facing text in Thai, code/comments in English
-5. **No server-side code** — all processing is client-side, privacy-first
-6. **Test manually** — no automated tests; verify screen capture, auto-detection, and export in browser
+3. **Thai UI strings only** — user-facing text in Thai, code/comments in English
+4. **No external API calls (Phase 1)** — all processing is client-side, privacy-first
+5. **TypeScript strict mode** — type safety enforced, avoid `any` without justification
+6. **Test manually** — verify screen capture, auto-detection, and export in browser
 
 ---
 
@@ -150,8 +171,7 @@ When creating or significantly modifying a feature:
 
 ## Key Warnings
 
-- **Pattern coordinates are game-measured** — see `docs/reference/constants.md`. Do not change unless game UI changes.
-- **`js/utils.js` duplicates inline functions** — changes to one must be reflected in the other.
+- **Pattern coordinates are game-measured** — see `lib/constants.ts`. Do not change unless game UI changes.
 - **Screen Capture requires HTTPS/localhost** — will fail on plain HTTP or `file://`.
 
 ---
@@ -159,7 +179,7 @@ When creating or significantly modifying a feature:
 ## Definition of Done
 
 - [ ] Change implemented with minimal scope
-- [ ] `js/utils.js` updated if inline functions changed (or vice versa)
+- [ ] TypeScript types properly defined
 - [ ] Related docs updated when behavior changed
 - [ ] Manual testing passed (screen capture, auto-detect, export)
 - [ ] Commit is scoped to one issue/change set
