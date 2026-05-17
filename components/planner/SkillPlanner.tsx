@@ -79,50 +79,47 @@ export function SkillPlanner() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
       {/* Header */}
       <h1 className="text-4xl md:text-5xl font-bold text-center mb-8 text-[#ffd700]">
         7K Skill Planner
       </h1>
 
-      <div className="grid lg:grid-cols-2 gap-8">
-        {/* Left column: Capture */}
-        <div className="space-y-6">
-          <div className="bg-[#16213e] p-6 rounded-xl border-2 border-[#0f3460]">
-            <h2 className="text-2xl font-bold text-[#ffd700] mb-4">จับภาพและเลือกสกิล</h2>
+      <div className="space-y-6">
+        {/* Capture Section */}
+        <div className="bg-[#16213e] p-6 rounded-xl border-2 border-[#0f3460]">
+          <h2 className="text-2xl font-bold text-[#ffd700] mb-4">จับภาพและเลือกสกิล</h2>
 
-            {!state.capturedImage ? (
-              <ScreenCapture onCapture={handleCapture} />
-            ) : (
-              <>
-                <CaptureCanvas
-                  imageDataUrl={state.capturedImage}
-                  zoom={state.zoom}
-                  onZoomChange={(zoom) => dispatch({ type: "SET_ZOOM", zoom })}
-                  onSkillSelect={handleSkillSelect}
-                />
+          {!state.capturedImage ? (
+            <ScreenCapture onCapture={handleCapture} />
+          ) : (
+            <>
+              <CaptureCanvas
+                imageDataUrl={state.capturedImage}
+                zoom={state.zoom}
+                onZoomChange={(zoom) => dispatch({ type: "SET_ZOOM", zoom })}
+                onSkillSelect={handleSkillSelect}
+              />
 
-                <button
-                  onClick={() => dispatch({ type: "RESET" })}
-                  className="w-full mt-4 px-6 py-3 bg-[#666] text-white rounded-lg
-                             hover:bg-[#888] transition-colors focus-visible:outline-none"
-                >
-                  🔄 จับภาพใหม่
-                </button>
-              </>
-            )}
-          </div>
+              <button
+                onClick={() => dispatch({ type: "RESET" })}
+                className="w-full mt-4 px-6 py-3 bg-[#666] text-white rounded-lg
+                           hover:bg-[#888] transition-colors focus-visible:outline-none"
+              >
+                🔄 จับภาพใหม่
+              </button>
+            </>
+          )}
         </div>
 
-        {/* Right column: Selection and Export */}
-        <div className="space-y-6">
-          <div className="bg-[#16213e] p-6 rounded-xl border-2 border-[#0f3460]">
-            <h2 className="text-2xl font-bold text-[#ffd700] mb-4">ตั้งค่าและส่งออก</h2>
+        {/* Settings Section */}
+        <div className="bg-[#16213e] p-6 rounded-xl border-2 border-[#0f3460]">
+          <h2 className="text-2xl font-bold text-[#ffd700] mb-4">ตั้งค่าและส่งออก</h2>
 
-            <NameInput
-              value={state.characterName}
-              onChange={(name) => dispatch({ type: "SET_NAME", name })}
-            />
+          <NameInput
+            value={state.characterName}
+            onChange={(name) => dispatch({ type: "SET_NAME", name })}
+          />
 
             {state.selectedSkills.length > 0 && (
               <ExportPreview
@@ -130,16 +127,16 @@ export function SkillPlanner() {
                 characterName={state.characterName}
               />
             )}
-          </div>
-
-          {state.selectedSkills.length > 0 && (
-            <SkillSelection
-              skills={state.selectedSkills}
-              onRemove={handleRemove}
-              onClear={handleClear}
-            />
-          )}
         </div>
+
+        {/* Skills Selection */}
+        {state.selectedSkills.length > 0 && (
+          <SkillSelection
+            skills={state.selectedSkills}
+            onRemove={handleRemove}
+            onClear={handleClear}
+          />
+        )}
       </div>
     </div>
   );

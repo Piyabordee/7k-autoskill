@@ -1,16 +1,19 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "7K Skill Planner - Auto Detection",
   description: "เครื่องมือวางแผนสกิลสำหรับเกม Seven Knights พร้อมระบบตรวจจับอัตโนมัติ",
   manifest: "/manifest.json",
-  themeColor: "#1a1a2e",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "7K Skill Planner",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#1a1a2e",
 };
 
 export default function RootLayout({

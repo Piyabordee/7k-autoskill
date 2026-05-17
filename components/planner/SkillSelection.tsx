@@ -66,8 +66,8 @@ export function SkillSelection({ skills, onRemove, onClear }: SkillSelectionProp
         </button>
       </div>
 
-      {/* Skills grid */}
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
+      {/* Skills grid - matches original selected-skills-container */}
+      <div className="selected-skills-container">
         {skills.map((skill, index) => (
           <div
             key={skill.id}
@@ -76,32 +76,30 @@ export function SkillSelection({ skills, onRemove, onClear }: SkillSelectionProp
             onDragOver={handleDragOver}
             onDrop={() => handleDrop(index)}
             onDragEnd={handleDragEnd}
-            className={`relative group cursor-grab active:cursor-grabbing
-                        ${draggedIndex === index ? 'opacity-50' : ''}
-                        transition-opacity`}
+            className={`selected-skill ${draggedIndex === index ? 'opacity-50' : ''}`}
           >
             {/* Skill image */}
             <img
               src={skill.image}
               alt={skill.name}
-              className="w-full aspect-square object-cover rounded-lg border-2
-                         border-[#0f3460] group-hover:border-[#ffd700]
-                         transition-colors"
+              className="w-[48px] h-[48px] object-cover rounded-md"
             />
 
             {/* Order badge */}
-            <div className="absolute top-1 left-1 w-6 h-6 bg-[#e74c3c] rounded-full
-                        flex items-center justify-center text-white text-xs font-bold">
+            <div className="order-number">
               {index + 1}
             </div>
 
             {/* Remove button */}
             <button
-              onClick={() => onRemove(skill.id)}
-              className="absolute top-1 right-1 w-6 h-6 bg-[#e74c3c] rounded-full
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemove(skill.id);
+              }}
+              className="absolute -top-2 -right-2 w-6 h-6 bg-[#e74c3c] rounded-full
                          flex items-center justify-center text-white text-xs font-bold
                          opacity-0 group-hover:opacity-100 transition-opacity
-                         hover:bg-[#ff6b6b] focus-visible:opacity-100 focus-visible:outline-none"
+                         hover:bg-[#ff6b6b] focus-visible:opacity-100"
               aria-label={`ลบสกิล ${skill.name}`}
             >
               ✕

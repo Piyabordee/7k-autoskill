@@ -31,28 +31,45 @@ export function CaptureCanvas({
 
     const img = new Image();
     img.onload = () => {
-      const newWidth = img.width * zoom;
-      const newHeight = img.height * zoom;
+      // Calculate base scale to fit in container (max 800px wide, same as original)
+      const maxDisplayWidth = 800;
+      const baseScale = Math.min(1, maxDisplayWidth / img.width);
+      const baseCanvasWidth = img.width * baseScale;
+      const baseCanvasHeight = img.height * baseScale;
 
-      canvas.width = newWidth;
-      canvas.height = newHeight;
-      ctx.drawImage(img, 0, 0, newWidth, newHeight);
+      // Apply zoom to get final display size
+      const displayWidth = baseCanvasWidth * zoom;
+      const displayHeight = baseCanvasHeight * zoom;
+
+      canvas.width = displayWidth;
+      canvas.height = displayHeight;
+      ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
 
       // Calculate overlay buttons
       const overlayButtons: typeof buttons = [];
-      const { startX, startY, gapX, gapY, rows, cols, skillSize } = PATTERN_SETTINGS;
+      const { startX, startY, gapX, gapY, rows, cols } = PATTERN_SETTINGS;
 
-      // Calculate scale: image is drawn at img.width * zoom, but PATTERN_SETTINGS are in original coordinates
-      // We need to scale button positions to match the drawn image
-      const canvasScaleX = newWidth / img.width;  // = zoom
-      const canvasScaleY = newHeight / img.height; // = zoom
+      // Use canvas INTERNAL dimensions for button positioning
+      // Canvas IS the coordinate system for the buttons
+      const scaleX = displayWidth / img.width;
+      const scaleY = displayHeight / img.height;
+
+      console.log('[CaptureCanvas] Calculation:', {
+        natural: { w: img.width, h: img.height },
+        base: { w: baseCanvasWidth, h: baseCanvasHeight },
+        display: { w: displayWidth, h: displayHeight },
+        zoom,
+        scale: { x: scaleX, y: scaleY }
+      });
 
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
           const originalX = startX + col * gapX;
           const originalY = startY + row * gapY;
-          const buttonX = originalX * canvasScaleX;
-          const buttonY = originalY * canvasScaleY;
+          const buttonX = originalX * scaleX;
+          const buttonY = originalY * scaleY;
+
+          console.log(`Button ${row * cols + col + 1}: original(${originalX}, ${originalY}) -> display(${buttonX.toFixed(1)}, ${buttonY.toFixed(1)})`);
 
           overlayButtons.push({ row, col, x: buttonX, y: buttonY, originalX, originalY });
         }
@@ -83,7 +100,7 @@ export function CaptureCanvas({
   return (
     <div className="mb-6">
       {/* Zoom controls */}
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center justify-center gap-2 mb-4">
         <button
           onClick={() => onZoomChange(Math.max(0.5, zoom - 0.1))}
           disabled={zoom <= 0.5}
@@ -112,25 +129,21 @@ export function CaptureCanvas({
       {/* Canvas with overlay buttons */}
       <div
         ref={containerRef}
-        className="relative inline-block overflow-hidden rounded-xl border-2 border-[#0f3460]"
+        className="relative inline-block mx-auto rounded-xl border-2 border-[#0f3460]"
       >
         <canvas
           ref={canvasRef}
-          className="max-w-full h-auto"
           aria-label="ภาพจับหน้าจอพร้อมการตรวจจับสกิล"
         />
-        {/* Overlay buttons */}
+        {/* Overlay buttons - styled like original skill-button */}
         {buttons.map((btn, index) => (
           <button
             key={index}
             onClick={() => handleSkillSelect(btn)}
-            className="absolute w-[30px] h-[30px] bg-[#ffd700] text-[#1a1a2e] rounded-full
-                       font-bold text-sm hover:bg-[#ffea00] hover:scale-110
-                       transition-transform duration-150 focus-visible:outline-none"
+            className="skill-button"
             style={{
               left: `${btn.x}px`,
               top: `${btn.y}px`,
-              transform: 'translate(-50%, -50%)',
             }}
             aria-label={`เลือกสกิล แถว ${btn.row + 1} คอลัมน์ ${btn.col + 1}`}
           >
