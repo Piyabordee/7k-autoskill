@@ -58,7 +58,7 @@ export function ExportPreview({ skills, characterName }: ExportPreviewProps) {
           ctx.drawImage(img, x, y, skillSize, skillSize);
           resolve();
         };
-        img.onerror = resolve;
+        img.onerror = () => resolve();
         img.src = skill.image;
       });
 

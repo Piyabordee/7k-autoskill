@@ -105,7 +105,7 @@ export function CaptureCanvas({
         <canvas
           ref={canvasRef}
           className="max-w-full h-auto"
-          alt="Captured screenshot with skill detection"
+          aria-label="ภาพจับหน้าจอพร้อมการตรวจจับสกิล"
         />
         {/* Overlay buttons */}
         {buttons.map((btn, index) => (
