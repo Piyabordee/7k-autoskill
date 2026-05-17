@@ -55,7 +55,6 @@ No external runtime dependencies in Phase 1. No database, no auth, no API routes
 │   ├── sw.js                      # Service worker (cache-first)
 │   └── icons/                     # PWA icons
 ├── next.config.ts
-├── tailwind.config.ts
 ├── tsconfig.json
 ├── package.json
 └── CLAUDE.md                      # Updated project instructions
@@ -110,6 +109,15 @@ ScreenCapture (captures frame)
           → ExportPreview (generate image, download/copy)
 ```
 
+### Routing and Pages
+
+| Route | Component Type | Content |
+|---|---|---|
+| `/` | Server Component | Landing page: Thai instructions, example images, "เริ่มใช้งาน" CTA linking to `/planner` |
+| `/planner` | Client Component | Main skill planner (all interactive functionality) |
+
+Navigation: simple `<Link>` from landing to planner. The current app toggles views via CSS; the new app uses Next.js file-based routing. No navigation bar needed (two pages only).
+
 ---
 
 ## State Management
@@ -124,30 +132,29 @@ Rationale: The planner state is cohesive (all pieces relate to one build session
 
 ### From vanilla CSS to Tailwind
 
-1. CSS custom properties (`--color-gold`, `--spacing-md`, etc.) migrate to `tailwind.config.ts` theme extensions
-2. All inline styles and class-based CSS rewrite to Tailwind utility classes
-3. Media queries use Tailwind responsive prefixes (`md:`, `lg:`)
-4. Focus-visible styles use Tailwind `focus-visible:` variant
-5. Dark background/gold accent color scheme preserved exactly
+1. All inline styles and class-based CSS rewrite to Tailwind utility classes
+2. Media queries use Tailwind responsive prefixes (`md:`, `lg:`)
+3. Focus-visible styles use Tailwind `focus-visible:` variant
+4. Dark background/gold accent color scheme preserved exactly
 
-### Custom Tailwind Theme
+### Custom Tailwind Theme (CSS-first, Tailwind v4)
 
-```typescript
-// tailwind.config.ts
-theme: {
-  extend: {
-    colors: {
-      '7k-bg': '#1a1a2e',       // dark blue background
-      '7k-gold': '#FFD700',      // gold accent
-      '7k-surface': '#16213e',   // card/surface
-      '7k-danger': '#e74c3c',    // red badge
-    },
-    fontFamily: {
-      thai: ['Sarabun', 'sans-serif'],
-    },
-  },
-},
+Tailwind v4 removed `tailwind.config.ts`. Configuration is CSS-first using `@theme`:
+
+```css
+/* app/globals.css */
+@import "tailwindcss";
+
+@theme {
+  --color-7k-bg: #1a1a2e;
+  --color-7k-gold: #FFD700;
+  --color-7k-surface: #16213e;
+  --color-7k-danger: #e74c3c;
+  --font-thai: "Sarabun", sans-serif;
+}
 ```
+
+No `tailwind.config.ts` file needed.
 
 ---
 
@@ -156,47 +163,75 @@ theme: {
 Keep manual service worker in `public/sw.js` — no `next-pwa` dependency.
 
 **Changes from current:**
-- Cache list points to Next.js routes (`/`, `/planner`) instead of `index.html`
 - `CACHE_NAME` bumps to `7k-skill-planner-v2`
 - `manifest.json` stays in `public/`, update `start_url` to `/planner`
+
+**Dynamic asset caching:** Next.js generates hashed assets under `/_next/static/`. The service worker cannot know these filenames at write time. Strategy:
+- Pre-cache only the app shell: `/`, `/planner`, `/manifest.json`
+- Use runtime cache-first for `/_next/static/` assets (they are content-hasheded, safe to cache long-term)
+- Use network-first for API routes (Phase 2+)
 
 ---
 
 ## Content Security Policy
 
-Move CSP from `<meta>` tag to Next.js `next.config.ts` headers:
+Move CSP from `<meta>` tag to Next.js `next.config.ts` headers.
 
+**Production CSP** (no `'unsafe-eval'`):
+```
+default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; font-src 'self';
+```
+
+**Development CSP** (Next.js requires `'unsafe-eval'` for HMR):
+```
+default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; font-src 'self';
+```
+
+Implementation:
 ```typescript
 // next.config.ts
+const isDev = process.env.NODE_ENV === 'development';
+const csp = `default-src 'self'; script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; font-src 'self';`;
+
 headers: async () => [{
   source: '/(.*)',
-  headers: [
-    { key: 'Content-Security-Policy', value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; font-src 'self';" },
-  ],
+  headers: [{ key: 'Content-Security-Policy', value: csp }],
 }],
 ```
 
-Note: Next.js requires `'unsafe-eval'` for its runtime in development. In production, this can be tightened.
-
 ---
 
-## Stable Rules Updates
+## Rules Updates
 
-The following rules in `.claude/rules/stable-rules.md` must be updated:
+### `.claude/rules/stable-rules.md`
 
 | Old Rule | New Rule |
 |---|---|
-| No frameworks, no build step | Next.js 15 App Router + Tailwind CSS + TypeScript |
+| No frameworks, no build step | Next.js 15 App Router + Tailwind CSS 4 + TypeScript |
 | Single HTML file, standalone | Component-based architecture in `app/` + `components/` |
 | No server-side code | Server Components for static pages; no API routes until Phase 2 |
 
-Rules that stay the same:
-- Privacy first (Phase 1 has no external calls)
-- Thai UI (`<html lang="th">`)
-- Pattern coordinates are sacred
-- Tier formula is game mechanics
-- Accessible by default
-- Credit snowb4ll
+Rules that stay the same: privacy first, Thai UI, pattern coordinates sacred, tier formula, accessible by default, credit snowb4ll.
+
+### `.claude/rules/coding-style-rules.md`
+
+| Section | Change |
+|---|---|
+| JavaScript → TypeScript | Update naming rules: interfaces use PascalCase, types use PascalCase. `const`/`let`, arrow functions, async/await still apply. |
+| CSS → Tailwind | Remove CSS variable conventions (`:root`, kebab-case classes). Replace with Tailwind utility classes and `@theme` custom properties. Responsive uses `md:`/`lg:` prefixes. `:focus-visible` uses Tailwind variant. |
+| HTML → TSX | `lang="th"` still required. ARIA labels still required. Semantic HTML5 still required. |
+
+### `.claude/rules/security-rules.md`
+
+| Rule | Change |
+|---|---|
+| XSS prevention | `sanitizeInput()` moves from `index.html`/`js/utils.js` to `lib/utils.ts`. Rule text updates file references. |
+| CSP header | Moves from `<meta>` tag to `next.config.ts` headers. `unsafe-eval` conditional on dev only. |
+| No external script execution | Update wording: framework scripts from `/_next/` are self-hosted. No CDN scripts. |
+
+### Duplication eliminated
+
+The current architecture explicitly duplicates functions between `index.html` and `js/utils.js` (noted as a key warning in CLAUDE.md). After migration, `lib/utils.ts` is the single source of truth — no duplication needed. Remove this warning from CLAUDE.md.
 
 ---
 
