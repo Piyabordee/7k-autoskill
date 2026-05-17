@@ -1,11 +1,12 @@
 "use client";
 
-import { useReducer } from "react";
+import { useReducer, useEffect } from "react";
 import { NameInput } from "./NameInput";
 import { ScreenCapture } from "./ScreenCapture";
 import { CaptureCanvas } from "./CaptureCanvas";
 import { SkillSelection } from "./SkillSelection";
 import { ExportPreview } from "./ExportPreview";
+import { ShareButton } from "./ShareButton";
 import type { Skill } from "@/lib/types";
 import { cropSkillFromImage } from "@/lib/utils";
 
@@ -43,13 +44,28 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-export function SkillPlanner() {
+interface SkillPlannerProps {
+  initialState?: {
+    characterName: string;
+    skills: Skill[];
+  } | null;
+  loadError?: string | null;
+}
+
+export function SkillPlanner({ initialState, loadError }: SkillPlannerProps) {
   const [state, dispatch] = useReducer(reducer, {
     capturedImage: null,
-    selectedSkills: [],
-    characterName: "",
+    selectedSkills: initialState?.skills || [],
+    characterName: initialState?.characterName || "",
     zoom: 1,
   });
+
+  // Show load error toast
+  useEffect(() => {
+    if (loadError) {
+      alert(loadError);
+    }
+  }, [loadError]);
 
   const handleCapture = (image: string) => {
     dispatch({ type: "SET_IMAGE", image });
@@ -57,7 +73,6 @@ export function SkillPlanner() {
 
   const handleSkillSelect = async (data: { row: number; col: number; imageDataUrl: string; x: number; y: number; size: number }) => {
     const { row, col, imageDataUrl, x, y, size } = data;
-    const position = row * 5 + col; // 5 columns
 
     // Crop the skill image from the captured screenshot
     const croppedImage = await cropSkillFromImage(imageDataUrl, x, y, size);
@@ -114,19 +129,25 @@ export function SkillPlanner() {
 
         {/* Settings Section */}
         <div className="bg-[#16213e] p-6 rounded-xl border-2 border-[#0f3460]">
-          <h2 className="text-2xl font-bold text-[#ffd700] mb-4">ตั้งค่าและส่งออก</h2>
+          <div className="flex justify-between items-start mb-4">
+            <h2 className="text-2xl font-bold text-[#ffd700]">ตั้งค่าและส่งออก</h2>
+            <ShareButton
+              characterName={state.characterName}
+              skills={state.selectedSkills}
+            />
+          </div>
 
           <NameInput
             value={state.characterName}
             onChange={(name) => dispatch({ type: "SET_NAME", name })}
           />
 
-            {state.selectedSkills.length > 0 && (
-              <ExportPreview
-                skills={state.selectedSkills}
-                characterName={state.characterName}
-              />
-            )}
+          {state.selectedSkills.length > 0 && (
+            <ExportPreview
+              skills={state.selectedSkills}
+              characterName={state.characterName}
+            />
+          )}
         </div>
 
         {/* Skills Selection */}
