@@ -7,18 +7,18 @@ interface CaptureCanvasProps {
   imageDataUrl: string;
   zoom: number;
   onZoomChange: (zoom: number) => void;
-  onSkillClick?: (row: number, col: number) => void;
+  onSkillSelect?: (skill: { row: number; col: number; imageDataUrl: string; x: number; y: number; size: number }) => void;
 }
 
 export function CaptureCanvas({
   imageDataUrl,
   zoom,
   onZoomChange,
-  onSkillClick,
+  onSkillSelect,
 }: CaptureCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [buttons, setButtons] = useState<Array<{ row: number; col: number; x: number; y: number }>>([]);
+  const [buttons, setButtons] = useState<Array<{ row: number; col: number; x: number; y: number; originalX: number; originalY: number }>>([]);
 
   useEffect(() => {
     if (!imageDataUrl) return;
@@ -40,16 +40,21 @@ export function CaptureCanvas({
 
       // Calculate overlay buttons
       const overlayButtons: typeof buttons = [];
-      const { startX, startY, gapX, gapY, rows, cols } = PATTERN_SETTINGS;
+      const { startX, startY, gapX, gapY, rows, cols, skillSize } = PATTERN_SETTINGS;
+
+      // Calculate scale: image is drawn at img.width * zoom, but PATTERN_SETTINGS are in original coordinates
+      // We need to scale button positions to match the drawn image
+      const canvasScaleX = newWidth / img.width;  // = zoom
+      const canvasScaleY = newHeight / img.height; // = zoom
 
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
           const originalX = startX + col * gapX;
           const originalY = startY + row * gapY;
-          const buttonX = originalX * zoom;
-          const buttonY = originalY * zoom;
+          const buttonX = originalX * canvasScaleX;
+          const buttonY = originalY * canvasScaleY;
 
-          overlayButtons.push({ row, col, x: buttonX, y: buttonY });
+          overlayButtons.push({ row, col, x: buttonX, y: buttonY, originalX, originalY });
         }
       }
 
@@ -58,9 +63,16 @@ export function CaptureCanvas({
     img.src = imageDataUrl;
   }, [imageDataUrl, zoom]);
 
-  const handleSkillClick = (row: number, col: number) => {
-    if (onSkillClick) {
-      onSkillClick(row, col);
+  const handleSkillSelect = (btn: typeof buttons[0]) => {
+    if (onSkillSelect) {
+      onSkillSelect({
+        row: btn.row,
+        col: btn.col,
+        imageDataUrl,
+        x: btn.originalX,
+        y: btn.originalY,
+        size: PATTERN_SETTINGS.skillSize,
+      });
     }
   };
 
@@ -111,7 +123,7 @@ export function CaptureCanvas({
         {buttons.map((btn, index) => (
           <button
             key={index}
-            onClick={() => handleSkillClick(btn.row, btn.col)}
+            onClick={() => handleSkillSelect(btn)}
             className="absolute w-[30px] h-[30px] bg-[#ffd700] text-[#1a1a2e] rounded-full
                        font-bold text-sm hover:bg-[#ffea00] hover:scale-110
                        transition-transform duration-150 focus-visible:outline-none"

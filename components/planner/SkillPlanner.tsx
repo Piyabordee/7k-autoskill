@@ -7,6 +7,7 @@ import { CaptureCanvas } from "./CaptureCanvas";
 import { SkillSelection } from "./SkillSelection";
 import { ExportPreview } from "./ExportPreview";
 import type { Skill } from "@/lib/types";
+import { cropSkillFromImage } from "@/lib/utils";
 
 interface State {
   capturedImage: string | null;
@@ -54,11 +55,16 @@ export function SkillPlanner() {
     dispatch({ type: "SET_IMAGE", image });
   };
 
-  const handleSkillClick = (row: number, col: number) => {
-    // Add skill to selected list
+  const handleSkillSelect = async (data: { row: number; col: number; imageDataUrl: string; x: number; y: number; size: number }) => {
+    const { row, col, imageDataUrl, x, y, size } = data;
+    const position = row * 5 + col; // 5 columns
+
+    // Crop the skill image from the captured screenshot
+    const croppedImage = await cropSkillFromImage(imageDataUrl, x, y, size);
+
     const skill: Skill = {
       id: Date.now(),
-      image: "", // Will be cropped from captured image
+      image: croppedImage,
       name: `สกิล ${state.selectedSkills.length + 1}`,
     };
     dispatch({ type: "ADD_SKILL", skill });
@@ -93,7 +99,7 @@ export function SkillPlanner() {
                   imageDataUrl={state.capturedImage}
                   zoom={state.zoom}
                   onZoomChange={(zoom) => dispatch({ type: "SET_ZOOM", zoom })}
-                  onSkillClick={handleSkillClick}
+                  onSkillSelect={handleSkillSelect}
                 />
 
                 <button
