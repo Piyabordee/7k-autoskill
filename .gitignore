@@ -53,3 +53,4 @@ build/
 # Claude - ignore local settings, but track rules
 .claude/*
 !.claude/rules/
+.worktrees/
