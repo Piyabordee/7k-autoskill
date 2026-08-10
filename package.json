@@ -12,7 +12,7 @@
   "dependencies": {
     "@types/pako": "^2.0.4",
     "@upstash/redis": "^1.38.0",
-    "nanoid": "^5.1.11",
+    "nanoid": "^5.1.16",
     "next": "^15.0.0",
     "pako": "^2.1.0",
     "react": "^19.0.0",
